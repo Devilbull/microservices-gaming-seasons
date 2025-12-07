@@ -34,9 +34,8 @@ CREATE TABLE users (
                        email           VARCHAR(120) UNIQUE NOT NULL,
                        date_of_birth   DATE               NOT NULL,
 
-                       role            user_role       NOT NULL DEFAULT 'GAMER',
-
-                       status          user_status        NOT NULL DEFAULT 'INITIALIZED',
+                       role   VARCHAR(20) NOT NULL DEFAULT 'GAMER',
+                       status VARCHAR(20) NOT NULL DEFAULT 'INITIALIZED',
                        is_activated    BOOLEAN            NOT NULL DEFAULT FALSE
 );
 
@@ -77,17 +76,4 @@ CREATE TRIGGER trg_create_gamer_stats
     FOR EACH ROW
     EXECUTE FUNCTION create_default_gamer_stats();
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-CREATE OR REPLACE FUNCTION hash_user_password()
-    RETURNS TRIGGER AS $$
-BEGIN
-    NEW.password := crypt(NEW.password, gen_salt('bf'));
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_hash_password
-    BEFORE INSERT ON users
-    FOR EACH ROW
-EXECUTE FUNCTION hash_user_password();
+-- ============================================

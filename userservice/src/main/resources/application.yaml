@@ -2,17 +2,19 @@ spring:
   application:
     name: userservice
 
-  spring:
-    cloud:
-      discovery:
-        enabled: false
-    flyway:
-      enabled: true
-      baseline-on-migrate: true
-      locations: classpath:db/migration
+  cloud:
+    discovery:
+      enabled: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
   logging:
     level:
       org.springframework.security: DEBUG
+
   datasource:
     url: jdbc:postgresql://localhost:5432/users_db
     username: postgres
@@ -27,11 +29,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-
-
-  eureka:
-    client:
-      enabled: false
+eureka:
+  client:
+    enabled: false
 
 server:
   port: 8081
