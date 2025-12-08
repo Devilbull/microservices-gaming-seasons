@@ -1,12 +1,20 @@
 package com.vuckoapp.userservice.services;
 
+import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
+import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
+import com.vuckoapp.userservice.exceptions.UserBlockedException;
+import com.vuckoapp.userservice.exceptions.UserNotActivatedException;
+import com.vuckoapp.userservice.exceptions.TokenISInvalid;
 import com.vuckoapp.userservice.model.*;
+import com.vuckoapp.userservice.repository.ActivationTokenRepository;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.security.jwt.JwtUtil;
 import com.vuckoapp.userservice.services.mapper.RegisterRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,20 +24,63 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RegisterRequestMapper requestMapper;
+    private final ActivationTokenRepository tokenRepository;
 
-    public void register(RegisterRequest request) {
+
+
+    public String register(RegisterRequest request) {
+        if (userRepository.findByUsername(request.username()).isPresent()) {
+            throw new UserAlreadyExistsException();
+        }
+
+        // 1. Kreiraj user i save
         User user = requestMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.password()));
+        user.setStatus(UserStatus.INITIALIZED);
+        userRepository.save(user);  // user.getId() sada ima UUID
+
+        // 2. Kreiraj token
+        String token = UUID.randomUUID().toString();
+        ActivationToken activationToken = new ActivationToken();
+        activationToken.setUser(user);   // MapsId uzima userId iz user.getId()
+        activationToken.setToken(token);
+
+        tokenRepository.save(activationToken);
+
+        return token;
+    }
+
+
+    public void activateUser(String token) {
+        ActivationToken activationToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new TokenISInvalid());
+
+        User user = activationToken.getUser();
+        user.setStatus(UserStatus.ACTIVE);
+        user.setActivated(true);
 
         userRepository.save(user);
+
+        // Obriši token nakon aktivacije
+        tokenRepository.delete(activationToken);
     }
+
 
     public String login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new RuntimeException("Invalid username"));
+                .orElseThrow(InvalidCredentialsException::new);
+
+
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException();
+        }
+
+        if(user.getStatus() == UserStatus.INITIALIZED) {
+            throw new UserNotActivatedException();
+        }
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            throw new UserBlockedException();
         }
 
         return jwtUtil.generateToken(user);

@@ -7,10 +7,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,9 +20,21 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        service.register(request);
-        return ResponseEntity.ok("User registered");
+        String token = service.register(request);
+
+        // TODO: Pošalji email korisniku sa linkom za aktivaciju:
+        // http://localhost:8080/auth/activate?token=<token>
+        // ili ako imaš frontend, http://myfrontend.com/activate?token=<token>
+
+        return ResponseEntity.ok(Map.of("message", "Registered successfully"));
     }
+
+    @GetMapping("/activate")
+    public ResponseEntity<?> activate(@RequestParam String token) {
+        service.activateUser(token);
+        return ResponseEntity.ok(Map.of("message", "Account activated successfully"));
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req,
@@ -39,7 +50,7 @@ public class AuthController {
 
         response.addCookie(cookie);
 
-        return ResponseEntity.ok("Logged in");
+        return ResponseEntity.ok(Map.of("message", "Logged in"));
     }
 
     @PostMapping("/logout")
@@ -47,12 +58,12 @@ public class AuthController {
 
         Cookie cookie = new Cookie("jwt", "");
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
-        cookie.setMaxAge(0);   // ❗ odmah ističe
+        cookie.setMaxAge(0);   // Expire the cookie immediately
 
         response.addCookie(cookie);
 
-        return ResponseEntity.ok("Logged out");
+        return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
 }

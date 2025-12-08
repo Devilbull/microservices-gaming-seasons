@@ -1,4 +1,3 @@
-// 'src/main/java/com/vucko_app/userservice/user/User.java'
 package com.vuckoapp.userservice.model;
 
 import jakarta.persistence.*;
