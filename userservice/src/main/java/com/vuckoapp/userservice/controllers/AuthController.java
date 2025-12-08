@@ -1,9 +1,10 @@
 package com.vuckoapp.userservice.controllers;
 
-import com.vuckoapp.userservice.model.JwtResponse;
 import com.vuckoapp.userservice.model.LoginRequest;
 import com.vuckoapp.userservice.model.RegisterRequest;
 import com.vuckoapp.userservice.services.AuthenticationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +26,33 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        String token = service.login(request);
-        return ResponseEntity.ok(new JwtResponse(token));
+    public ResponseEntity<?> login(@RequestBody LoginRequest req,
+                                   HttpServletResponse response) {
+
+        String token = service.login(req);
+
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // set TRUE if using HTTPS
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60); // 1 day
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Logged in");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // Logout is handled on the frontend — simply delete JWT.
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("jwt", "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);   // ❗ odmah ističe
+
+        response.addCookie(cookie);
+
         return ResponseEntity.ok("Logged out");
     }
 }

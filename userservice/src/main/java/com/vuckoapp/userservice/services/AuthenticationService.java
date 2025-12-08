@@ -3,6 +3,7 @@ package com.vuckoapp.userservice.services;
 import com.vuckoapp.userservice.model.*;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.security.jwt.JwtUtil;
+import com.vuckoapp.userservice.services.mapper.RegisterRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,11 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RegisterRequestMapper requestMapper;
 
     public void register(RegisterRequest request) {
-        User user = User.builder()
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .email(request.email())
-                .fullName(request.fullName())
-                .dateOfBirth(request.dateOfBirth())
-                .role(Role.USER)                 // default role
-                .status(UserStatus.INITIALIZED)   // default status
-                .isActivated(false)
-                .build();
+        User user = requestMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         userRepository.save(user);
     }
@@ -38,7 +32,7 @@ public class AuthenticationService {
             throw new RuntimeException("Invalid password");
         }
 
-        return jwtUtil.generateToken(user.getUsername());
+        return jwtUtil.generateToken(user);
     }
 }
 

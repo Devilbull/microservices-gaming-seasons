@@ -1,4 +1,6 @@
 package com.vuckoapp.userservice.security.jwt;
+
+import com.vuckoapp.userservice.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -19,15 +21,17 @@ public class JwtUtil {
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(60 * 60 * 24); // 24h
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getUsername())                 // standard field
+                .claim("userId", user.getId().toString())       // custom
+                .claim("role", user.getRole().name())           // custom
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiry))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // <-- NOVO
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -38,6 +42,24 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public String extractUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", String.class);
+    }
+
+    public String extractRole(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
     }
 
     public boolean isValid(String token) {
