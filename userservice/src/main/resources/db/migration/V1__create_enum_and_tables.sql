@@ -38,9 +38,9 @@ CREATE TABLE users (
                            CHECK (role IN ('ADMIN', 'GAMER')),
 
                        status VARCHAR(20) NOT NULL DEFAULT 'INITIALIZED'
-                           CHECK (status IN ('INITIALIZED', 'ACTIVE', 'BLOCKED')),
+                           CHECK (status IN ('INITIALIZED', 'ACTIVE', 'BLOCKED'))
 
-                       is_activated    BOOLEAN            NOT NULL DEFAULT FALSE
+
 );
 
 CREATE TABLE gamer_stats (

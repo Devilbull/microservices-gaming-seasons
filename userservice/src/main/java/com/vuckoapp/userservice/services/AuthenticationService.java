@@ -67,7 +67,7 @@ public class AuthenticationService {
 
         User user = activationToken.getUser();
         user.setStatus(UserStatus.ACTIVE);
-        user.setActivated(true);
+
 
         userRepository.save(user);
 

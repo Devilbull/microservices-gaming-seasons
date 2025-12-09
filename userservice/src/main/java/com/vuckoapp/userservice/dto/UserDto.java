@@ -11,6 +11,6 @@ public record UserDto(
         String email,
         LocalDate dateOfBirth,
         String role,
-        String status,
-        boolean isActivated
+        String status
+
 ) {}

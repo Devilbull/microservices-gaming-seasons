@@ -18,6 +18,5 @@ public interface CreateUserRequestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", expression = "java(com.vuckoapp.userservice.model.Role.GAMER)")
     @Mapping(target = "status", expression = "java(com.vuckoapp.userservice.model.UserStatus.INITIALIZED)")
-    @Mapping(target = "isActivated", constant = "false")
     User toEntity(CreateUserRequest req);
 }

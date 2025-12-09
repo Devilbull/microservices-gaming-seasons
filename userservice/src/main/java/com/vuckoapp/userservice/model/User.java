@@ -40,8 +40,7 @@ public class User {
     @Column(nullable = false, columnDefinition = "user_status")
     private UserStatus status;       // INITIALIZED, ACTIVE, BLOCKED
 
-    @Column(nullable = false)
-    private boolean isActivated;
+
 
     @PrePersist
     public void prePersist() {

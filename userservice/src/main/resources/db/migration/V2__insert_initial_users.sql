@@ -4,7 +4,7 @@
 
 -- ADMIN (odmah aktivan, nije potrebno aktiviranje mejlom)
 INSERT INTO users (
-    username, password, full_name, email, date_of_birth, role, status, is_activated
+    username, password, full_name, email, date_of_birth, role, status
 ) VALUES (
              'admin',
              '$2a$10$0pnsNrPC9/hUV73rnMUP3.vBsOMcorzyWokTzJag8OdSVZk5oMF7.', -- 123
@@ -12,8 +12,8 @@ INSERT INTO users (
              'admin@example.com',
              '1990-01-01',
              'ADMIN',
-             'ACTIVE',       -- odmah aktivan
-             true            -- već aktiviran
+             'ACTIVE'       -- odmah aktivan
+
          );
 
 -- GAMER #1 (nije aktiviran → INITIALIZED)
