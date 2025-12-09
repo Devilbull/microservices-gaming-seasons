@@ -1,5 +1,7 @@
 package com.vuckoapp.userservice.services;
 
+import com.vuckoapp.userservice.dto.LoginRequest;
+import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
 import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
 import com.vuckoapp.userservice.exceptions.UserBlockedException;

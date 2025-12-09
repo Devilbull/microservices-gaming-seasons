@@ -1,10 +1,8 @@
 // java
 package com.vuckoapp.userservice.services.mapper;
 
-import com.vuckoapp.userservice.model.RegisterRequest;
-import com.vuckoapp.userservice.model.Role;
+import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.model.User;
-import com.vuckoapp.userservice.model.UserStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

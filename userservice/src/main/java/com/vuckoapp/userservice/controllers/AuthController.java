@@ -1,7 +1,7 @@
 package com.vuckoapp.userservice.controllers;
 
-import com.vuckoapp.userservice.model.LoginRequest;
-import com.vuckoapp.userservice.model.RegisterRequest;
+import com.vuckoapp.userservice.dto.LoginRequest;
+import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

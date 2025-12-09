@@ -1,4 +1,4 @@
-package com.vuckoapp.userservice.model;
+package com.vuckoapp.userservice.dto;
 
 import java.time.LocalDate;
 

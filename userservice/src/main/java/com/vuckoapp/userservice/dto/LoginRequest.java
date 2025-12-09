@@ -1,4 +1,4 @@
-package com.vuckoapp.userservice.model;
+package com.vuckoapp.userservice.dto;
 
 public record LoginRequest(
         String username,
