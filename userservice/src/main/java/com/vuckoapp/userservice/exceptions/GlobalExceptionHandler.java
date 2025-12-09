@@ -43,8 +43,8 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(TokenISInvalid.class)
-    public ResponseEntity<Object> handleInvalidToken(TokenISInvalid ex) {
+    @ExceptionHandler(TokenIsInvalid.class)
+    public ResponseEntity<Object> handleInvalidToken(TokenIsInvalid ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

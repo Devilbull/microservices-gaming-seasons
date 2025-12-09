@@ -1,7 +1,7 @@
 package com.vuckoapp.userservice.exceptions;
 
-public class TokenISInvalid extends RuntimeException {
-    public TokenISInvalid() {
+public class TokenIsInvalid extends RuntimeException {
+    public TokenIsInvalid() {
         super("The provided token is invalid.");
     }
 }

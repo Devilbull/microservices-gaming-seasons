@@ -3,6 +3,7 @@ package com.vuckoapp.userservice.security.jwt;
 import com.vuckoapp.userservice.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -14,7 +15,14 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd";
+
+
+    private final String SECRET;
+
+    public JwtUtil(@Value("${jwt.secret}") String secretBase64) {
+        this.SECRET = secretBase64;
+    }
+
 
     private Key getSigningKey() {
         byte[] keyBytes = SECRET.getBytes(StandardCharsets.UTF_8);

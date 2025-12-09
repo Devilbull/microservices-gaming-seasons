@@ -4,7 +4,7 @@ import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
 import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
 import com.vuckoapp.userservice.exceptions.UserBlockedException;
 import com.vuckoapp.userservice.exceptions.UserNotActivatedException;
-import com.vuckoapp.userservice.exceptions.TokenISInvalid;
+import com.vuckoapp.userservice.exceptions.TokenIsInvalid;
 import com.vuckoapp.userservice.model.*;
 import com.vuckoapp.userservice.repository.ActivationTokenRepository;
 import com.vuckoapp.userservice.repository.UserRepository;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -53,7 +54,16 @@ public class AuthenticationService {
 
     public void activateUser(String token) {
         ActivationToken activationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new TokenISInvalid());
+                .orElseThrow(TokenIsInvalid::new);
+
+        // TTL = 24 hours (adjust if needed)
+        LocalDateTime created = activationToken.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+        if (created.isBefore(now.minusHours(24))) {
+            // cleanup expired token and fail
+            tokenRepository.delete(activationToken);
+            throw new TokenIsInvalid();
+        }
 
         User user = activationToken.getUser();
         user.setStatus(UserStatus.ACTIVE);
@@ -61,7 +71,7 @@ public class AuthenticationService {
 
         userRepository.save(user);
 
-        // Obriši token nakon aktivacije
+        // Delete token after successful activation
         tokenRepository.delete(activationToken);
     }
 

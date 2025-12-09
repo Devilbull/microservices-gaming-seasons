@@ -34,8 +34,12 @@ CREATE TABLE users (
                        email           VARCHAR(120) UNIQUE NOT NULL,
                        date_of_birth   DATE               NOT NULL,
 
-                       role   VARCHAR(20) NOT NULL DEFAULT 'GAMER',
-                       status VARCHAR(20) NOT NULL DEFAULT 'INITIALIZED',
+                       role   VARCHAR(20) NOT NULL DEFAULT 'GAMER'
+                           CHECK (role IN ('ADMIN', 'GAMER')),
+
+                       status VARCHAR(20) NOT NULL DEFAULT 'INITIALIZED'
+                           CHECK (status IN ('INITIALIZED', 'ACTIVE', 'BLOCKED')),
+
                        is_activated    BOOLEAN            NOT NULL DEFAULT FALSE
 );
 

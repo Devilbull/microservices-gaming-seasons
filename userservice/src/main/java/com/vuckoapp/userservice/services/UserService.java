@@ -11,6 +11,7 @@ import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.services.mapper.CreateUserRequestMapper;
 import com.vuckoapp.userservice.services.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository repo;
     private final UserMapper userMapper;
     private final CreateUserRequestMapper requestMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UserDto> all() {
@@ -52,7 +54,7 @@ public class UserService {
 
 
         if (dto.password() != null)
-            user.setPassword(dto.password()); // ili passwordEncoder.encode()
+            user.setPassword(passwordEncoder.encode(dto.password()));
 
         if (dto.fullName() != null)
             user.setFullName(dto.fullName());
