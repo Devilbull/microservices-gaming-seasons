@@ -1,16 +1,11 @@
-// java
 package com.vuckoapp.userservice.controllers;
 
-import com.vuckoapp.userservice.dto.CreateUserRequest;
-import com.vuckoapp.userservice.dto.UserDto;
-import com.vuckoapp.userservice.services.UserService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
+import com.vuckoapp.userservice.dto.UpdateUserRequest; // DTO za update
+import com.vuckoapp.userservice.dto.UserDto;          // DTO za prikaz korisnika
+import com.vuckoapp.userservice.services.UserService; // servis koji pozivaš
+import lombok.RequiredArgsConstructor;                // Lombok anotacija
+import org.springframework.security.core.Authentication; // za pristup ulogovanom korisniku
+import org.springframework.web.bind.annotation.*;    // @RestController, @RequestMapping, @GetMapping, @PutMapping
 
 @RestController
 @RequestMapping("/users")
@@ -21,7 +16,7 @@ public class UserController {
 
     @GetMapping("/me")
     public UserDto getMe(Authentication auth) {
-        return userService.getByEmail(auth.getName());
+        return userService.getByUsername(auth.getName());
     }
 
     @PutMapping("/me")
