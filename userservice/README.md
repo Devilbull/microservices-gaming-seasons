@@ -19,7 +19,6 @@
 | ---------------- | ------ | ------------- | ---------------------------------- |
 | `/users/me`      | GET    | Authenticated | Vraća profil ulogovanog korisnika. |
 | `/users/me`      | PUT    | Authenticated | Menja osnovne podatke korisnika.   |
-| `/users/{id}`    | GET    | Authenticated | Prikaz profila drugog korisnika.   |
 
 ---
 

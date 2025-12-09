@@ -13,30 +13,20 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    private final UserService service;
 
-    public UserController(UserService service) {
-        this.service = service;
+    private final UserService userService;
+
+    @GetMapping("/me")
+    public UserDto getMe(Authentication auth) {
+        return userService.getByEmail(auth.getName());
     }
 
-    @GetMapping
-    public List<UserDto> all() {
-        return service.all();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> byId(@PathVariable UUID id) {
-        try {
-            return ResponseEntity.ok(service.byId(id));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping
-    public UserDto create(@Valid @RequestBody CreateUserRequest req) {
-        return service.create(req);
+    @PutMapping("/me")
+    public UserDto updateMe(Authentication auth, @RequestBody UpdateUserRequest dto) {
+        return userService.updateUser(auth.getName(), dto);
     }
 }
+

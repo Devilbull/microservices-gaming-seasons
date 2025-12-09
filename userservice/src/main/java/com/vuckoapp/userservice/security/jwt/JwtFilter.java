@@ -21,7 +21,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
 
-
     private String extractTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() == null) return null;
 
@@ -41,8 +40,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // ignorisati register i login endpoint
-        if (path.equals("/auth/register") || path.equals("/auth/login")) {
+        // sve aut rute su public
+        if (path.startsWith("/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -52,15 +51,20 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String username = jwtUtil.extractUsername(token);
+
+        String username = null;
+        try {
+            username = jwtUtil.extractUsername(token);
+        } catch (Exception ignored) {}
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails user = userDetailsService.loadUserByUsername(username);
-
             if (jwtUtil.isValid(token)) {
+                UserDetails user = userDetailsService.loadUserByUsername(username);
+
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 user, null, user.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
