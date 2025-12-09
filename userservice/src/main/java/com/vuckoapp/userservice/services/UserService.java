@@ -6,6 +6,7 @@ import com.vuckoapp.userservice.dto.UpdateUserRequest;
 import com.vuckoapp.userservice.dto.UserDto;
 import com.vuckoapp.userservice.model.Role;
 import com.vuckoapp.userservice.model.User;
+import com.vuckoapp.userservice.model.UserStatus;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.services.mapper.CreateUserRequestMapper;
 import com.vuckoapp.userservice.services.mapper.UserMapper;
@@ -76,9 +77,17 @@ public class UserService {
     }
 
     public void blockUser(UUID id) {
+        User user = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(UserStatus.BLOCKED);
+        repo.save(user);
+
     }
 
     public void unblockUser(UUID id) {
-
+        User user = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(UserStatus.ACTIVE);
+        repo.save(user);
     }
 }
