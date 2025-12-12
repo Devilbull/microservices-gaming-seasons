@@ -42,6 +42,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleExists(UserAlreadyExistsException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Object> handleEmailExists(EmailAlreadyExistsException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
     @ExceptionHandler(TokenIsInvalid.class)
     public ResponseEntity<Object> handleInvalidToken(TokenIsInvalid ex) {

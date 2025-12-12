@@ -36,6 +36,10 @@ public class AuthenticationService {
             throw new UserAlreadyExistsException();
         }
 
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new UserAlreadyExistsException();
+        }
+
         // 1. Kreiraj user i save
         User user = requestMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.password()));

@@ -2,7 +2,10 @@ package com.vuckoapp.userservice.controllers;
 
 import com.vuckoapp.userservice.dto.UserDto;
 import com.vuckoapp.userservice.services.UserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,10 +13,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin")
-@RequiredArgsConstructor
+@RequiredArgsConstructor()
 public class AdminController {
 
-    private final UserService userService;
+    private  UserService userService;
+
+
 
     @GetMapping("/users")
     public List<UserDto> allUsers() {
