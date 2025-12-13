@@ -10,21 +10,21 @@ Start-Process powershell -ArgumentList `
 Start-Sleep -Seconds 5
 
 # 2️⃣ Spring Boot services
-$services = @(
-  "userservice"
-#,
-#  "notification-service",
-#  "analytics-service",
-#  "gateway-service"
-)
-
-foreach ($service in $services) {
-    Write-Host "☕ Starting $service..."
-    Start-Process powershell -ArgumentList `
-      "-NoExit", `
-      "-Command cd $service; mvn spring-boot:run" `
-      -WindowStyle Normal
-}
+#$services = @(
+#  "userservice"
+##,
+##  "notification-service",
+##  "analytics-service",
+##  "gateway-service"
+#)
+#
+#foreach ($service in $services) {
+#    Write-Host "☕ Starting $service..."
+#    Start-Process powershell -ArgumentList `
+#      "-NoExit", `
+#      "-Command cd $service; mvn spring-boot:run" `
+#      -WindowStyle Normal
+#}
 
 # 3️⃣ Frontend
 Write-Host "⚛️ Starting frontend..."
