@@ -27,8 +27,11 @@ Start-Sleep -Seconds 5
 #}
 
 # 3️⃣ Frontend
-Write-Host " Starting frontend..."
-Start-Process powershell -ArgumentList `
-  "-NoExit", `
-  "-Command cd frontend; npm run dev" `
-  -WindowStyle Normal
+#Write-Host " Starting frontend..."
+#Start-Process powershell -ArgumentList `
+#  "-NoExit", `
+#  "-Command cd frontend; npm run dev" `
+#  -WindowStyle Normal
+
+cd frontend
+ npm run dev
