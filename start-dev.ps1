@@ -1,13 +1,13 @@
-Write-Host "🚀 Starting DEV environment..." -ForegroundColor Green
+Write-Host " Starting DEV environment..." -ForegroundColor Green
 
-# 1️⃣ Docker infra
-Write-Host "🐳 Starting Docker services..."
-Start-Process powershell -ArgumentList `
-  "-NoExit", `
-  "-Command cd docker; docker compose up -d" `
-  -WindowStyle Normal
+# 1️⃣ Docker (isti prozor)
+Write-Host " Starting Docker services..."
+cd docker
+docker compose up -d
+cd ..
 
 Start-Sleep -Seconds 5
+
 
 # 2️⃣ Spring Boot services
 #$services = @(
@@ -19,7 +19,7 @@ Start-Sleep -Seconds 5
 #)
 #
 #foreach ($service in $services) {
-#    Write-Host "☕ Starting $service..."
+#    Write-Host " Starting $service..."
 #    Start-Process powershell -ArgumentList `
 #      "-NoExit", `
 #      "-Command cd $service; mvn spring-boot:run" `
@@ -27,7 +27,7 @@ Start-Sleep -Seconds 5
 #}
 
 # 3️⃣ Frontend
-Write-Host "⚛️ Starting frontend..."
+Write-Host " Starting frontend..."
 Start-Process powershell -ArgumentList `
   "-NoExit", `
   "-Command cd frontend; npm run dev" `
