@@ -16,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor()
 public class AdminController {
 
-    private  UserService userService;
+    private final UserService userService;
 
 
 
