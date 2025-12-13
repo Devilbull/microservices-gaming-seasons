@@ -22,6 +22,7 @@ public class ActivationToken {
     @Column(nullable = false, unique = true, length = 255)
     private String token;
 
+    @Builder.Default
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

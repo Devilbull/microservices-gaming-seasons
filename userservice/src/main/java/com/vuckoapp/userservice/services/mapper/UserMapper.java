@@ -12,5 +12,7 @@ public interface UserMapper {
     @Mapping(target = "status", expression = "java(user.getStatus().name())")
     UserDto toDto(User user);
 
+    @Mapping(target = "password", ignore = true)
     User toEntity(UserDto userDto);
 }
+
