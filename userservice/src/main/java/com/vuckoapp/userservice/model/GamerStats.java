@@ -2,6 +2,8 @@ package com.vuckoapp.userservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 @Entity
 @Table(name = "gamer_stats")
@@ -26,8 +28,8 @@ public class GamerStats {
     @Column(nullable = false)
     private int numberOfLeavingSessions = 0;
 
-    @Column(nullable = false)
-    private double attendanceNumber = 100.0;
+    @Column(name = "attendance_rate", nullable = false, precision = 5, scale = 2)
+    private BigDecimal attendanceNumber = BigDecimal.valueOf(100.0);
 
     @Column(nullable = false)
     private int numberOfSuccessfulSessions = 0;

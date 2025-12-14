@@ -2,8 +2,6 @@ spring:
   application:
     name: userservice
 
-
-
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -39,6 +37,5 @@ spring:
   server:
     port: 8081
 
-  jwt:
-    # prefer injecting from environment: set JWT_SECRET in env and it will be used
-    secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}
+jwt:
+  secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}

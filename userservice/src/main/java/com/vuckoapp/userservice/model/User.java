@@ -11,7 +11,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @Column(columnDefinition = "uuid")
@@ -32,20 +34,17 @@ public class User {
     @Column(nullable = false)
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)   // <-- mapiranje na string/ENUM u bazi
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role;               // ADMIN ili GAMER
+    private Role role;
 
-    @Enumerated(EnumType.STRING)   // <-- mapiranje na string/ENUM u bazi
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "user_status")
-    private UserStatus status;       // INITIALIZED, ACTIVE, BLOCKED
-
-    @OneToOne(mappedBy = "users",cascade = CascadeType.ALL)
-    private GamerStats gamerStats;
-
+    private UserStatus status;
 
     @PrePersist
     public void prePersist() {
         if (id == null) id = UUID.randomUUID();
     }
 }
+
