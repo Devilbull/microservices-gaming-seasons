@@ -40,6 +40,8 @@ public class User {
     @Column(nullable = false, columnDefinition = "user_status")
     private UserStatus status;       // INITIALIZED, ACTIVE, BLOCKED
 
+    @OneToOne(mappedBy = "users",cascade = CascadeType.ALL)
+    private GamerStats gamerStats;
 
 
     @PrePersist
