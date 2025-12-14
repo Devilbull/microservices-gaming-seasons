@@ -1,4 +1,5 @@
 services:
+  # db1
   users-db:
     image: postgres:16
     container_name: users-db
@@ -10,6 +11,20 @@ services:
       - "5432:5432"
     volumes:
       - users_db_data:/var/lib/postgresql/data
+
+    # db2
+  notification-db:
+    image: postgres:16
+    container_name: notification-db
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432" # drugačiji port da ne konfliktiše sa users-db
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+
 
   rabbitmq:
     image: rabbitmq:3-management # Using the image with the management plugin
@@ -35,5 +50,6 @@ services:
 
 volumes:
   users_db_data:
+  notification_db_data:
   rabbitmq_data:
     driver: local
