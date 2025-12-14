@@ -2,13 +2,10 @@ spring:
   application:
     name: userservice
 
-  cloud:
-    discovery:
-      enabled: false
+
 
   flyway:
     enabled: true
-    baseline-on-migrate: true
     locations: classpath:db/migration
 
   logging:
@@ -29,13 +26,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-eureka:
-  client:
-    enabled: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
-server:
-  port: 8081
+  eureka:
+    client:
+      enabled: false
 
-jwt:
-  # prefer injecting from environment: set JWT_SECRET in env and it will be used
-  secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}
+  server:
+    port: 8081
+
+  jwt:
+    # prefer injecting from environment: set JWT_SECRET in env and it will be used
+    secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}

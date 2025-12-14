@@ -1,17 +1,16 @@
 package com.vuckoapp.notificationservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "notification_log")
+@Getter
+@Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class NotificationLog {
 
     @Id
@@ -24,6 +23,8 @@ public class NotificationLog {
     @Column(length = 2000)
     private String message;
 
+    @Column(name = "sent_at")
     private LocalDateTime sentAt;
+
 }
 
