@@ -18,14 +18,15 @@ INSERT INTO users (
 
 -- GAMER #1 (nije aktiviran → INITIALIZED)
 INSERT INTO users (
-    username, password, full_name, email, date_of_birth, role
+    username, password, full_name, email, date_of_birth, role,status
 ) VALUES (
              'gamer_one',
              '$2a$10$0pnsNrPC9/hUV73rnMUP3.vBsOMcorzyWokTzJag8OdSVZk5oMF7.',
              'John Gamer',
              'gamer1@example.com',
              '2000-05-10',
-             'GAMER'
+             'GAMER',
+             'ACTIVE'
          );
 -- trigger automatski kreira gamer_stats
 

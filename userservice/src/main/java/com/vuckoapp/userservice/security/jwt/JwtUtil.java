@@ -36,7 +36,8 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(user.getUsername())                 // standard field
                 .claim("userId", user.getId().toString())       // custom
-                .claim("role", user.getRole().name())           // custom
+                .claim("role", user.getRole().name())
+                .claim("email",user.getEmail())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiry))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
