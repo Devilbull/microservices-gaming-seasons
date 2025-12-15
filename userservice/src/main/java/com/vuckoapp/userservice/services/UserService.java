@@ -1,6 +1,7 @@
 // java
 package com.vuckoapp.userservice.services;
 
+import com.vuckoapp.userservice.dto.ChangePasswordRequest;
 import com.vuckoapp.userservice.dto.CreateUserRequest;
 import com.vuckoapp.userservice.dto.UpdateUserRequest;
 import com.vuckoapp.userservice.dto.UserDto;
@@ -10,12 +11,15 @@ import com.vuckoapp.userservice.model.UserStatus;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.services.mapper.CreateUserRequestMapper;
 import com.vuckoapp.userservice.services.mapper.UserMapper;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -53,9 +57,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
-        if (dto.password() != null)
-            user.setPassword(passwordEncoder.encode(dto.password()));
-
         if (dto.fullName() != null)
             user.setFullName(dto.fullName());
 
@@ -67,6 +68,19 @@ public class UserService {
 
         if (dto.role() != null)
             user.setRole(Role.valueOf(dto.role())); // ili Role.valueOf(dto.role())
+
+        return userMapper.toDto(repo.save(user));
+    }
+    @Transactional
+    public UserDto changePassword(String name, ChangePasswordRequest req) {
+        User user = repo.findByUsername(name)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if(!passwordEncoder.matches(req.oldPassword(), user.getPassword()))
+            throw new RuntimeException("Incorrect Old password");
+
+        user.setPassword(passwordEncoder.encode(req.newPassword()));
+
+
 
         return userMapper.toDto(repo.save(user));
     }
@@ -92,4 +106,6 @@ public class UserService {
         user.setStatus(UserStatus.ACTIVE);
         repo.save(user);
     }
+
+
 }

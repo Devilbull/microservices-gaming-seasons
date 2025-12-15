@@ -1,6 +1,8 @@
 package com.vuckoapp.userservice.controllers;
 
 import com.vuckoapp.userservice.dto.UserDto;
+import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
+import com.vuckoapp.userservice.exceptions.NotFoundException;
 import com.vuckoapp.userservice.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -33,6 +35,13 @@ public class AdminController {
     @PutMapping("/users/{id}/unblock")
     public void unblockUser(@PathVariable UUID id) {
         userService.unblockUser(id);
+    }
+
+    @RequestMapping(value = "/**")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
+    public void handleUnknownAdminRoutes() {
+        // Prazno, samo vraća 404
+        throw new NotFoundException();
     }
 }
 
