@@ -1,12 +1,14 @@
 package com.vuckoapp.userservice.services;
 
 import com.vuckoapp.userservice.dto.LoginRequest;
+import com.vuckoapp.userservice.dto.NotificationRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
 import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
 import com.vuckoapp.userservice.exceptions.UserBlockedException;
 import com.vuckoapp.userservice.exceptions.UserNotActivatedException;
 import com.vuckoapp.userservice.exceptions.TokenIsInvalid;
+import com.vuckoapp.userservice.messager.NotificationProducer;
 import com.vuckoapp.userservice.model.*;
 import com.vuckoapp.userservice.repository.ActivationTokenRepository;
 import com.vuckoapp.userservice.repository.UserRepository;
@@ -28,7 +30,7 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final RegisterRequestMapper requestMapper;
     private final ActivationTokenRepository tokenRepository;
-
+    private final NotificationProducer notificationProducer;
 
 
     public String register(RegisterRequest request) {
@@ -53,6 +55,9 @@ public class AuthenticationService {
         activationToken.setToken(token);
 
         tokenRepository.save(activationToken);
+
+        // 3. Pošalji u RabbitMQ
+        notificationProducer.sendActivationEmail(user.getEmail(), token);
 
         return token;
     }
