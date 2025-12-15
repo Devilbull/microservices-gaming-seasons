@@ -57,7 +57,7 @@ public class AuthenticationService {
         tokenRepository.save(activationToken);
 
         // 3. Pošalji u RabbitMQ
-        notificationProducer.sendActivationEmail(user.getEmail(), token);
+        notificationProducer.sendActivationEmail(user.getEmail(),user.getUsername(), token);
 
         return token;
     }

@@ -11,7 +11,7 @@ import org.springframework.amqp.core.TopicExchange;
 public class RabbitProducerConfig {
 
     public static final String EXCHANGE = "notification-exchange";
-    public static final String ACTIVATION_ROUTING_KEY = "activation.email";
+    public static final String ROUTING_KEY = "notification.send";
 
     @Bean
     public JacksonJsonMessageConverter jacksonJsonMessageConverter() {
@@ -19,14 +19,9 @@ public class RabbitProducerConfig {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+    public RabbitTemplate rabbitTemplate(ConnectionFactory cf) {
+        RabbitTemplate template = new RabbitTemplate(cf);
         template.setMessageConverter(jacksonJsonMessageConverter());
         return template;
-    }
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE);
     }
 }

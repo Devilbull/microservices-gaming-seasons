@@ -2,9 +2,12 @@ package com.vuckoapp.userservice.messager;
 
 import com.vuckoapp.userservice.config.RabbitProducerConfig;
 import com.vuckoapp.userservice.dto.NotificationRequest;
+import com.vuckoapp.userservice.types.UserNotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -12,16 +15,20 @@ public class NotificationProducer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void sendActivationEmail(String email, String activationToken) {
+    public void sendActivationEmail(String email,String username, String activationToken) {
         NotificationRequest request = NotificationRequest.builder()
-                .email(email)
-                .subject("Activate your account")
-                .message("Click to activate: http://localhost:8081/auth/activate?token=" + activationToken)
+                .toEmail(email)
+                .type(UserNotificationType.ACTIVATION_EMAIL)
+                .sourceService("USER_SERVICE")
+                .payload(Map.of(
+                        "username", username,
+                        "activationToken", activationToken
+                ))
                 .build();
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ACTIVATION_ROUTING_KEY,
+                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
                 request
         );
     }

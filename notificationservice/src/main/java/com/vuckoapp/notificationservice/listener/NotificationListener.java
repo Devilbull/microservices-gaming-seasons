@@ -13,7 +13,7 @@ public class NotificationListener {
 
     private final NotificationService notificationService;
 
-    @RabbitListener(queues = RabbitConfig.QUEUE_ACTIVATION)
+    @RabbitListener(queues = RabbitConfig.QUEUE)
     public void receive(NotificationRequest request) {
         notificationService.sendNotification(request);
     }

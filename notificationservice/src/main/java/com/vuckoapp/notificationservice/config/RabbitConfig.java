@@ -13,33 +13,30 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
 
-    public static final String QUEUE_ACTIVATION = "activation-email-queue";
+    public static final String EXCHANGE = "notification-exchange";
+    public static final String QUEUE = "notification-queue";
+    public static final String ROUTING_KEY = "notification.send";
 
     @Bean
-    public Queue activationQueue() {
-        return new Queue(QUEUE_ACTIVATION, true);
+    public Queue notificationQueue() {
+        return new Queue(QUEUE, true);
     }
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange("notification-exchange");
+        return new TopicExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding binding(Queue activationQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(activationQueue).to(exchange).with("activation.#");
+    public Binding binding(Queue notificationQueue, TopicExchange exchange) {
+        return BindingBuilder
+                .bind(notificationQueue)
+                .to(exchange)
+                .with(ROUTING_KEY);
     }
 
-    // --- Dodajemo ovde ---
     @Bean
     public JacksonJsonMessageConverter jacksonJsonMessageConverter() {
         return new JacksonJsonMessageConverter();
-    }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(jacksonJsonMessageConverter());
-        return template;
     }
 }

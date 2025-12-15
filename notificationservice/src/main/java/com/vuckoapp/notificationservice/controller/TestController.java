@@ -12,15 +12,15 @@ public class TestController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/test-mail")
-    public void test() {
-        NotificationRequest req = new NotificationRequest(
-                "aca.vdj@gmail.com",
-                "Test",
-                "Radi 👍"
-        );
-        notificationService.sendNotification(req);
-    }
+//    @GetMapping("/test-mail")
+//    public void test() {
+//        NotificationRequest req = new NotificationRequest(
+//                "aca.vdj@gmail.com",
+//                "Test",
+//                "Radi 👍"
+//        );
+//        notificationService.sendNotification(req);
+//    }
 
 
 }
