@@ -46,3 +46,5 @@ spring:
             required: true
 server:
   port: 8082
+jwt:
+  secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}

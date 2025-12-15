@@ -18,6 +18,7 @@ public class NotificationLog {
     private Long id;
 
     private String email;
+
     private String subject;
 
     @Column(length = 2000)
