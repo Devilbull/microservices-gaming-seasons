@@ -1,8 +1,7 @@
 spring:
   application:
     name: notificationservice
-  server:
-    port: 8082
+
 
   config:
     import: optional:classpath:environment/application-secrets.yml
@@ -39,6 +38,11 @@ spring:
     password: ${MAIL_PASSWORD}
     protocol: smtp
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.ssl.enable: true
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+server:
+  port: 8082
