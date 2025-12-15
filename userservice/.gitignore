@@ -3,7 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+notificationservice\src\main\resources\environment\ap
 
 frontend/node_modules/
 
