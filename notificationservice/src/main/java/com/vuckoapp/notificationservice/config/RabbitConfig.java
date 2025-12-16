@@ -1,9 +1,6 @@
 package com.vuckoapp.notificationservice.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -23,12 +20,12 @@ public class RabbitConfig {
     }
 
     @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE);
+    public DirectExchange exchange() {
+        return new DirectExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding binding(Queue notificationQueue, TopicExchange exchange) {
+    public Binding binding(Queue notificationQueue, DirectExchange exchange) {
         return BindingBuilder
                 .bind(notificationQueue)
                 .to(exchange)
