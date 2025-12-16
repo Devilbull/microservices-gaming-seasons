@@ -17,4 +17,9 @@ public class UserNotificationService {
         return notificationLogsRepository.findByEmail(email);
 
     }
+
+    @Transactional
+    public List<NotificationLog> getAllNotifications() {
+        return notificationLogsRepository.findAll();
+    }
 }

@@ -27,4 +27,10 @@ public class UserNotificationsController {
         List<NotificationLog> notifications = userNotificationService.getAllNotificationsForUser(email);
         return ResponseEntity.ok(notifications);
     }
+    @GetMapping("/all")
+    public ResponseEntity<?> allNotifications() {
+
+        List<NotificationLog> notifications = userNotificationService.getAllNotifications();
+        return ResponseEntity.ok(notifications);
+    }
 }
