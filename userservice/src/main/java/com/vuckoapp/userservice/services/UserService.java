@@ -1,13 +1,12 @@
 // java
 package com.vuckoapp.userservice.services;
 
-import com.vuckoapp.userservice.dto.ChangePasswordRequest;
-import com.vuckoapp.userservice.dto.CreateUserRequest;
-import com.vuckoapp.userservice.dto.UpdateUserRequest;
-import com.vuckoapp.userservice.dto.UserDto;
+import com.vuckoapp.userservice.dto.*;
+import com.vuckoapp.userservice.model.GamerStats;
 import com.vuckoapp.userservice.model.Role;
 import com.vuckoapp.userservice.model.User;
 import com.vuckoapp.userservice.model.UserStatus;
+import com.vuckoapp.userservice.repository.GamerStatsRepository;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.services.mapper.CreateUserRequestMapper;
 import com.vuckoapp.userservice.services.mapper.UserMapper;
@@ -29,6 +28,7 @@ public class UserService {
     private final UserRepository repo;
     private final UserMapper userMapper;
     private final CreateUserRequestMapper requestMapper;
+    private final GamerStatsRepository gamerStatsRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
@@ -56,18 +56,11 @@ public class UserService {
         User user = repo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-
         if (dto.fullName() != null)
             user.setFullName(dto.fullName());
 
-        if (dto.email() != null)
-            user.setEmail(dto.email());
-
         if (dto.dateOfBirth() != null)
             user.setDateOfBirth(dto.dateOfBirth());
-
-        if (dto.role() != null)
-            user.setRole(Role.valueOf(dto.role())); // ili Role.valueOf(dto.role())
 
         return userMapper.toDto(repo.save(user));
     }
@@ -89,7 +82,11 @@ public class UserService {
     public UserDto getByUsername(String username) {
         User user = repo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return userMapper.toDto(user);
+        GamerStats statsDto = null;
+        if(user.getRole().equals(Role.GAMER)){
+            statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);
+        }
+        return userMapper.toDto(user,statsDto);
     }
 
     public void blockUser(UUID id) {

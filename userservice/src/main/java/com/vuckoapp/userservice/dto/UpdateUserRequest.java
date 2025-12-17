@@ -15,13 +15,7 @@ public record UpdateUserRequest(
         @Size(max = 120)
         String fullName,
 
-        @Email
-        @Size(max = 120)
-        String email,
-
-        LocalDate dateOfBirth,
-
-        String role
+        LocalDate dateOfBirth
 
 ) {}
 

@@ -22,6 +22,7 @@ public class UserController {
 
     @GetMapping("/me")
     public UserDto getMe(Authentication auth) {
+
         return userService.getByUsername(auth.getName());
     }
 
@@ -32,17 +33,24 @@ public class UserController {
 
     @PatchMapping("/me/password")
     public ResponseEntity<?> changePassword(Authentication auth, @RequestBody ChangePasswordRequest req, HttpServletResponse response) {
-        UserDto dto =  userService.changePassword(auth.getName(), req);
 
-        Cookie cookie = new Cookie("jwt", "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+        try{
+            userService.changePassword(auth.getName(), req);
+            Cookie cookie = new Cookie("jwt", "");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
 
-        response.addCookie(cookie);
+            response.addCookie(cookie);
 
-        return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+
+        } catch(RuntimeException e){
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+        }
+
+
     }
 }
 

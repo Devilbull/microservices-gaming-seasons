@@ -38,9 +38,6 @@ public class GamerStats {
     @Column(name = "organizer_title", nullable = false, length = 20)
     private OrganizerTitle organizerTitle = OrganizerTitle.BRONZE;
 
-    @PrePersist
-    public void prePersist() {
-        if (id == null) id = UUID.randomUUID();
-    }
+
 }
 

@@ -49,7 +49,7 @@ CREATE TABLE gamer_stats (
                              total_sessions              INTEGER NOT NULL DEFAULT 0,
                              attended_sessions           INTEGER NOT NULL DEFAULT 0,
                              missed_sessions             INTEGER NOT NULL DEFAULT 0,
-                             attendance_rate             NUMERIC(5,2) NOT NULL DEFAULT 0.00,
+                             attendance_rate             NUMERIC(5,2) NOT NULL DEFAULT 100.00,
 
                              successful_hosted_sessions  INTEGER NOT NULL DEFAULT 0,
                              organizer_title             organizer_title NOT NULL DEFAULT 'BRONZE'
