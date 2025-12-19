@@ -1,8 +1,10 @@
 package com.vuckoapp.userservice.controllers;
 
 import com.vuckoapp.userservice.dto.LoginRequest;
+import com.vuckoapp.userservice.dto.PasswordForgetRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.dto.ResetPasswordRequest;
+import com.vuckoapp.userservice.exceptions.NotFoundException;
 import com.vuckoapp.userservice.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,8 +71,8 @@ public class AuthController {
     }
 
     @PostMapping("/passwordForget")
-    public ResponseEntity<?> passwordForget(@RequestParam String email) {
-        service.forgotPassword(email);
+    public ResponseEntity<?> passwordForget(@RequestBody PasswordForgetRequest body) {
+        service.forgotPassword(body.email());
         return  ResponseEntity.ok(Map.of("message", "Email with token sent successfully"));
     }
 
@@ -79,6 +81,13 @@ public class AuthController {
         service.resetPassword(resetPasswordRequest);
         return  ResponseEntity.ok(Map.of("message", "Password reset successfully"));
 
+    }
+
+    @RequestMapping(value = "/**")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
+    public void handleUnknownAdminRoutes() {
+        // Prazno, samo vraća 404
+        throw new NotFoundException();
     }
 
 
