@@ -3,6 +3,7 @@ package com.vuckoapp.userservice.services;
 import com.vuckoapp.userservice.dto.LoginRequest;
 import com.vuckoapp.userservice.dto.NotificationRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
+import com.vuckoapp.userservice.dto.ResetPasswordRequest;
 import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
 import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
 import com.vuckoapp.userservice.exceptions.UserBlockedException;
@@ -11,12 +12,14 @@ import com.vuckoapp.userservice.exceptions.TokenIsInvalid;
 import com.vuckoapp.userservice.messager.NotificationProducer;
 import com.vuckoapp.userservice.model.*;
 import com.vuckoapp.userservice.repository.ActivationTokenRepository;
+import com.vuckoapp.userservice.repository.PasswordResetTokenRepository;
 import com.vuckoapp.userservice.repository.UserRepository;
 import com.vuckoapp.userservice.security.jwt.JwtUtil;
 import com.vuckoapp.userservice.services.mapper.RegisterRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,6 +34,7 @@ public class AuthenticationService {
     private final RegisterRequestMapper requestMapper;
     private final ActivationTokenRepository tokenRepository;
     private final NotificationProducer notificationProducer;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
 
     public String register(RegisterRequest request) {
@@ -105,6 +109,42 @@ public class AuthenticationService {
         }
 
         return jwtUtil.generateToken(user);
+    }
+    @Transactional
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(InvalidCredentialsException::new);
+
+        String token = UUID.randomUUID().toString();
+
+        PasswordResetToken resetToken = passwordResetTokenRepository.findById(user.getId())
+                .orElse(new PasswordResetToken());
+
+        resetToken.setUser(user);
+        resetToken.setToken(token);
+        resetToken.setCreatedAt(LocalDateTime.now());
+
+        passwordResetTokenRepository.save(resetToken);
+
+        notificationProducer.sendPasswordResetEmail(email,user.getUsername(),token);
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.token()).orElseThrow(TokenIsInvalid::new);
+
+        if (passwordResetToken.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(15))) {
+            passwordResetTokenRepository.delete(passwordResetToken);
+            throw new RuntimeException("Token expired!");
+        }
+
+        User user = passwordResetToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+
+
+        passwordResetTokenRepository.delete(passwordResetToken);
     }
 }
 

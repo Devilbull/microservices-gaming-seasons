@@ -65,7 +65,24 @@ public class NotificationService {
                     Zdravo %s,
 
                     Klikni na link ispod da aktiviraš nalog:
-                    http://localhost:8081/auth/activate?token=%s
+                    http://localhost:8081/api/userservice/auth/activate?token=%s
+
+                    Pozdrav,
+                    Tim
+                    """.formatted(username, token);
+            }
+            case PASSWORD_RESET -> {
+                String username = (String) payload.get("username");
+                String token = (String) payload.get("passwordResetToken");
+
+                yield """
+                    Zdravo %s,
+
+                    Zaboravili ste lozinku? Nema problema.
+                    Ovo je vas privremeni token: %s
+                    
+                    Ovaj token ističe za 15 minuta.
+                    Ako niste vi poslali ovaj zahtev, slobodno ignorišite ovaj mejl.
 
                     Pozdrav,
                     Tim

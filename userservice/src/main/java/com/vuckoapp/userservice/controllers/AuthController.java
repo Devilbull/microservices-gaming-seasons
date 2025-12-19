@@ -2,6 +2,7 @@ package com.vuckoapp.userservice.controllers;
 
 import com.vuckoapp.userservice.dto.LoginRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
+import com.vuckoapp.userservice.dto.ResetPasswordRequest;
 import com.vuckoapp.userservice.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -66,4 +67,19 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
+
+    @PostMapping("/passwordForget")
+    public ResponseEntity<?> passwordForget(@RequestParam String email) {
+        service.forgotPassword(email);
+        return  ResponseEntity.ok(Map.of("message", "Email with token sent successfully"));
+    }
+
+    @PostMapping("/passwordReset")
+    public ResponseEntity<?> passwordReset(@RequestParam ResetPasswordRequest resetPasswordRequest) {
+        service.resetPassword(resetPasswordRequest);
+        return  ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+
+    }
+
+
 }

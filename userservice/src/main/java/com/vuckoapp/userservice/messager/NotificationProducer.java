@@ -32,4 +32,22 @@ public class NotificationProducer {
                 request
         );
     }
+    public void sendPasswordResetEmail(String email,String username, String token) {
+        NotificationRequest request = NotificationRequest.builder()
+                .toEmail(email)
+                .type(UserNotificationType.PASSWORD_RESET)
+                .sourceService("USER_SERVICE")
+                .payload(Map.of(
+                        "username", username,
+                        "passwordResetToken", token
+                ))
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                RabbitProducerConfig.EXCHANGE,
+                RabbitProducerConfig.ROUTING_KEY,
+                request
+        );
+    }
+
 }
