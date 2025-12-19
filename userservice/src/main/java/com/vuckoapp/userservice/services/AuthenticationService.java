@@ -137,8 +137,10 @@ public class AuthenticationService {
             passwordResetTokenRepository.delete(passwordResetToken);
             throw new RuntimeException("Token expired!");
         }
-
-        User user = passwordResetToken.getUser();
+        UUID id = passwordResetToken.getUser().getId();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println(user.getId());
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
