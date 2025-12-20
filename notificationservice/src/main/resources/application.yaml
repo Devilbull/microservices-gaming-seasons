@@ -44,6 +44,10 @@ spring:
           starttls:
             enable: true
             required: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 server:
   port: 8082
   servlet:
