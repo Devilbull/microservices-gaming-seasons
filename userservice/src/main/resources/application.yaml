@@ -26,7 +26,12 @@ spring:
     username: guest
     password: guest
 
+  mvc: # for 404 handling
+    throw-exception-if-no-handler-found: true
 
+  web:
+    resources:
+      add-mappings: false
 
 logging:
   level:
@@ -42,9 +47,12 @@ eureka:
     non-secure-port: ${server.port}
 
 server:
-  port: 0
+  port: 0 # Let the server pick a random available port
   servlet:
     context-path: /api/userservice
+  error:
+    whitelabel:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}

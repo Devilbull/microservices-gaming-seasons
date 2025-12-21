@@ -44,13 +44,22 @@ spring:
           starttls:
             enable: true
             required: true
+  mvc: # for 404 handling
+    throw-exception-if-no-handler-found: true
+
+  web:
+    resources:
+      add-mappings: false
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
 server:
   port: 8082
   servlet:
     context-path: /api/notificationservice
+
 jwt:
   secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}

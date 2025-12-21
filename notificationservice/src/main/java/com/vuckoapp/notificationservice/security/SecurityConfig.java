@@ -29,6 +29,16 @@ public class SecurityConfig {
                         .requestMatchers("/notifications/my").authenticated()
                         .anyRequest().denyAll()
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> {
+                            res.setStatus(401);
+                            res.getWriter().write("401 - Unauthorized");
+                        })
+                        .accessDeniedHandler((req, res, e) -> {
+                            res.setStatus(403);
+                            res.getWriter().write("403 - Forbidden");
+                        })
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
