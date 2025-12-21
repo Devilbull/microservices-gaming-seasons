@@ -60,7 +60,7 @@ public class NotificationService {
             case ACTIVATION_EMAIL -> {
                 String username = (String) payload.get("username");
                 String token = (String) payload.get("activationToken");
-                String localUrl = "localhost:8080";
+                String localUrl = "http://localhost:8080";
                 yield """
                    Hello %s,
                    
