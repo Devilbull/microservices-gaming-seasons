@@ -13,15 +13,19 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private ResponseEntity<Object> build(HttpStatus status, String message) {
-        return new ResponseEntity<>(
-                Map.of(
-                        "timestamp", LocalDateTime.now().toString(),
-                        "status", status.value(),
-                        "error", status.getReasonPhrase(),
-                        "message", message
-                ),
-                status
+        // Kreira response body
+        Map<String, Object> body = Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "status", status.value(),
+                "error", status.getReasonPhrase(),
+                "message", message
         );
+
+        // Dodaj CORS header-e
+        return ResponseEntity.status(status)
+                .header("Access-Control-Allow-Origin", "http://localhost:7155")
+                .header("Access-Control-Allow-Credentials", "true")
+                .body(body);
     }
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleRouteNotFound(NoHandlerFoundException ex) {

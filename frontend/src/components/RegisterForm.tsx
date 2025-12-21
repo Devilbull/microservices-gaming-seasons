@@ -34,7 +34,7 @@ const RegisterForm: React.FC = () => {
     const onSubmit = async (data: RegisterFormInputs) => {
         try {
             // Pošalji ispravan payload backendu
-            const res = await api.post('/auth/register', {
+            const res = await api.post('api/userservice/auth/register', {
                 username: data.username,
                 password: data.password,
                 email: data.email,
