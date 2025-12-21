@@ -2,7 +2,7 @@ package com.vuckoapp.notificationservice.service;
 
 import com.vuckoapp.notificationservice.dto.NotificationRequest;
 import com.vuckoapp.notificationservice.model.NotificationLog;
-import com.vuckoapp.notificationservice.repository.NotificationLogRepository;
+import com.vuckoapp.notificationservice.repository.NotificationLogsRepository;
 import com.vuckoapp.notificationservice.types.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class NotificationService {
 
     private final JavaMailSender mailSender;
-    private final NotificationLogRepository logRepository;
+    private final NotificationLogsRepository logRepository;
 
     public void sendNotification(NotificationRequest request) {
 
@@ -45,10 +45,10 @@ public class NotificationService {
 
     private String resolveSubject(NotificationType type) {
         return switch (type) {
-            case ACTIVATION_EMAIL -> "Aktivacija naloga";
-            case PASSWORD_RESET -> "Reset lozinke";
-            case SESSION_INVITATION -> "Pozivnica za sesiju";
-            default -> "Sistemska notifikacija";
+            case ACTIVATION_EMAIL -> "Account Activation";
+            case PASSWORD_RESET -> "Password Reset";
+            case SESSION_INVITATION -> "Session Invitation";
+            default -> "System Notification";
         };
     }
 
@@ -60,36 +60,36 @@ public class NotificationService {
             case ACTIVATION_EMAIL -> {
                 String username = (String) payload.get("username");
                 String token = (String) payload.get("activationToken");
-
+                String localUrl = "localhost:8080";
                 yield """
-                    Zdravo %s,
-
-                    Klikni na link ispod da aktiviraš nalog:
-                    http://localhost:8081/api/userservice/auth/activate?token=%s
-
-                    Pozdrav,
-                    Tim
-                    """.formatted(username, token);
+                   Hello %s,
+                   
+                   Click the link below to activate your account:
+                   %s/api/userservice/auth/activate?token=%s
+            
+                   Regards,
+                   Team
+                   """.formatted(username,localUrl, token);
             }
             case PASSWORD_RESET -> {
                 String username = (String) payload.get("username");
                 String token = (String) payload.get("passwordResetToken");
 
                 yield """
-                    Zdravo %s,
-
-                    Zaboravili ste lozinku? Nema problema.
-                    Ovo je vas privremeni token: %s
-                    
-                    Ovaj token ističe za 15 minuta.
-                    Ako niste vi poslali ovaj zahtev, slobodno ignorišite ovaj mejl.
-
-                    Pozdrav,
-                    Tim
-                    """.formatted(username, token);
+                   Hello %s,
+                   
+                   Forgot your password? No worries.
+                   Here is your temporary token: %s
+                
+                   This token expires in 15 minutes.
+                   If you did not request this, feel free to ignore this email.
+                
+                   Regards,
+                   Team
+                   """.formatted(username, token);
             }
 
-            default -> "Imate novu notifikaciju.";
+            default -> "New notification.";
         };
     }
 
