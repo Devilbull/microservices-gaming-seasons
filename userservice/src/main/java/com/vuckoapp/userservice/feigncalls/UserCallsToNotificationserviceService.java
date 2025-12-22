@@ -1,0 +1,10 @@
+package com.vuckoapp.userservice.feigncalls;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@FeignClient(name = "notificationservice")
+public interface UserCallsToNotificationserviceService {
+    @GetMapping("/api/notificationservice/test-mail")
+    public void test();
+}

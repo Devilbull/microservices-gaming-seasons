@@ -5,6 +5,7 @@ import com.vuckoapp.userservice.dto.PasswordForgetRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.dto.ResetPasswordRequest;
 import com.vuckoapp.userservice.exceptions.NotFoundException;
+import com.vuckoapp.userservice.feigncalls.UserCallsToNotificationserviceService;
 import com.vuckoapp.userservice.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationService service;
+    private  final UserCallsToNotificationserviceService notificationservice;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -66,7 +68,7 @@ public class AuthController {
         cookie.setMaxAge(0);   // Expire the cookie immediately
 
         response.addCookie(cookie);
-
+        notificationservice.test();
         return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
 
