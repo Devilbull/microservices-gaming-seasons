@@ -82,13 +82,13 @@ public class AuthController {
         return  ResponseEntity.ok(Map.of("message", "Password reset successfully"));
 
     }
-
-    @RequestMapping(value = "/**")
-    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
-    public void handleUnknownAdminRoutes() {
-        // Prazno, samo vraća 404
-        throw new NotFoundException();
-    }
+    // No need, there is a global handler for 404
+//    @RequestMapping(value = "/**")
+//    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
+//    public void handleUnknownAdminRoutes() {
+//
+//        throw new NotFoundException();
+//    }
 
 
 }

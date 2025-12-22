@@ -49,7 +49,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+    // Front access
     @Bean
     public org.springframework.web.filter.CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
