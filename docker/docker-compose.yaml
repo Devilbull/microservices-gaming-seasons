@@ -25,6 +25,19 @@ services:
     volumes:
       - notification_db_data:/var/lib/postgresql/data
 
+    # db1
+  gaming-db:
+      image: postgres:16
+      container_name: gaming-db
+      environment:
+        POSTGRES_DB: gaming_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+      ports:
+        - "5434:5432"
+      volumes:
+        - gaming_db_data:/var/lib/postgresql/data
+
 
   rabbitmq:
     image: rabbitmq:3-management # Using the image with the management plugin
@@ -51,5 +64,6 @@ services:
 volumes:
   users_db_data:
   notification_db_data:
+  gaming_db_data:
   rabbitmq_data:
     driver: local

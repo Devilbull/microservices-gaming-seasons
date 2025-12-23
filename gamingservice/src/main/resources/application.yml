@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: gamingservice
+
+  # Ako koristiš tajne (JWT_SECRET i slično)
+  config:
+    import: optional:classpath:environment/application-secrets.yml
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  datasource:
+     url: jdbc:postgresql://localhost:5434/gaming_db
+     username: postgres
+     password: password
+     driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+server:
+  port: 0
+  servlet:
+    context-path: /api/gamingservice
+
+jwt:
+  secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}
