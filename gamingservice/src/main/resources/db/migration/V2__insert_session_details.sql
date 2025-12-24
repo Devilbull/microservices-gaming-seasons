@@ -8,7 +8,7 @@ VALUES
         5,
         'CLOSED',
         '2025-12-25 18:00:00',
-        'Tražimo iskusnog healer-a za dungeon crawl.',
+        'We are looking for an experienced healer for a dungeon crawl.',
         'SCHEDULED'
     ),
     (
@@ -19,6 +19,6 @@ VALUES
         10,
         'OPEN',
         '2025-12-26 21:30:00',
-        'Opušteno pucanje, svi nivoi dobrodošli.',
+        'Relax ranked, all levels welcome.',
         'SCHEDULED'
     );

@@ -1,6 +1,6 @@
-package com.vuckoapp.notificationservice.security;
+package com.vuckoapp.gamingservice.security;
 
-import com.vuckoapp.notificationservice.security.JwtFilter;
+import com.vuckoapp.gamingservice.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +29,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/notifications/all").hasRole("ADMIN")
-                        .requestMatchers("/notifications/my").authenticated()
+                        .requestMatchers("/gamingservice/all").hasRole("ADMIN")
+                        .requestMatchers("/gamingservice/my").authenticated()
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex

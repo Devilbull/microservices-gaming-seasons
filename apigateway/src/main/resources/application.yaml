@@ -13,6 +13,10 @@ spring:
           uri: lb://notificationservice
           predicates:
             - Path=/api/notificationservice/**
+        - id: gaming-service
+          uri: lb://gamingservice
+          predicates:
+            - Path=/api/gamingservice/**
 
 server:
   port: 8080
@@ -23,4 +27,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 3
