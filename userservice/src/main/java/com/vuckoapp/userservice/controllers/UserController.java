@@ -1,8 +1,11 @@
 package com.vuckoapp.userservice.controllers;
 
 import com.vuckoapp.userservice.dto.ChangePasswordRequest;
+import com.vuckoapp.userservice.dto.SessionEligibilityDtoGamingService;
 import com.vuckoapp.userservice.dto.UpdateUserRequest; // DTO za update
 import com.vuckoapp.userservice.dto.UserDto;          // DTO za prikaz korisnika
+import com.vuckoapp.userservice.model.User;
+import com.vuckoapp.userservice.model.UserStatus;
 import com.vuckoapp.userservice.services.UserService; // servis koji pozivaš
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication; // za pristup ulogovanom korisniku
 import org.springframework.web.bind.annotation.*;    // @RestController, @RequestMapping, @GetMapping, @PutMapping
 
+import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -24,6 +29,20 @@ public class UserController {
     public UserDto getMe(Authentication auth) {
 
         return userService.getByUsername(auth.getName());
+    }
+
+    @GetMapping("/session-eligibility")
+    public SessionEligibilityDtoGamingService canCreateSession(Authentication auth) {
+
+        UserDto user = userService.getByUsername(auth.getName());
+
+        boolean blocked = Objects.equals(user.status(), UserStatus.BLOCKED.toString());
+        boolean attendanceOk = user.gamerStats().attendanceNumber().compareTo( BigDecimal.valueOf(90.0)) >= 0;
+
+        return new SessionEligibilityDtoGamingService(
+                blocked,
+                attendanceOk
+        );
     }
 
     @PutMapping("/me")

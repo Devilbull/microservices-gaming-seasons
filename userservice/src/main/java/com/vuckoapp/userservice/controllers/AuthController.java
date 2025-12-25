@@ -68,7 +68,7 @@ public class AuthController {
         cookie.setMaxAge(0);   // Expire the cookie immediately
 
         response.addCookie(cookie);
-        notificationservice.test();
+       // notificationservice.test();
         return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
 
