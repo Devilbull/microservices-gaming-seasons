@@ -29,18 +29,28 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/gamingservice/all").hasRole("ADMIN")
-                        .requestMatchers("/gamingservice/my").authenticated()
+                        .requestMatchers("/admin/games/**").hasRole("ADMIN")
+                        .requestMatchers("/sessions/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
                             res.setStatus(401);
-                            res.getWriter().write("401 - Unauthorized");
+                            res.setContentType("application/json");
+                            String body = String.format(
+                                    "{\"timestamp\":\"%s\", \"status\":401, \"error\":\"Unauthorized\", \"message\":\"%s\"}",
+                                    java.time.LocalDateTime.now(), "Not logged in !"
+                            );
+                            res.getWriter().write(body);
                         })
                         .accessDeniedHandler((req, res, e) -> {
                             res.setStatus(403);
-                            res.getWriter().write("403 - Forbidden");
+                            res.setContentType("application/json");
+                            String body = String.format(
+                                    "{\"timestamp\":\"%s\", \"status\":403, \"error\":\"Forbidden\", \"message\":\"%s\"}",
+                                    java.time.LocalDateTime.now(), "Not ADMIN !"
+                            );
+                            res.getWriter().write(body);
                         })
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/games")
+@RequestMapping("/admin/games")
 @RequiredArgsConstructor
-public class GameController {
+public class AdminGameController {
 
     private final GameService gameService;
 
