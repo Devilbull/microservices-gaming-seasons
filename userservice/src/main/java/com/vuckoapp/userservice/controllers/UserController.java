@@ -4,6 +4,7 @@ import com.vuckoapp.userservice.dto.ChangePasswordRequest;
 import com.vuckoapp.userservice.dto.SessionEligibilityDtoGamingService;
 import com.vuckoapp.userservice.dto.UpdateUserRequest; // DTO za update
 import com.vuckoapp.userservice.dto.UserDto;          // DTO za prikaz korisnika
+import com.vuckoapp.userservice.model.Role;
 import com.vuckoapp.userservice.model.User;
 import com.vuckoapp.userservice.model.UserStatus;
 import com.vuckoapp.userservice.services.UserService; // servis koji pozivaš
@@ -37,7 +38,11 @@ public class UserController {
         UserDto user = userService.getByUsername(auth.getName());
 
         boolean blocked = Objects.equals(user.status(), UserStatus.BLOCKED.toString());
-        boolean attendanceOk = user.gamerStats().attendanceNumber().compareTo( BigDecimal.valueOf(90.0)) >= 0;
+        boolean attendanceOk = true;
+        if(!user.role().equals(Role.ADMIN.toString())) {
+            attendanceOk = user.gamerStats().attendanceNumber().compareTo( BigDecimal.valueOf(90.0)) >= 0;
+        }
+
 
         return new SessionEligibilityDtoGamingService(
                 blocked,
