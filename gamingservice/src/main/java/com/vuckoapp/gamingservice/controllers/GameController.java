@@ -21,9 +21,10 @@ public class GameController {
         return gameService.getAllGames();
     }
 
+    //@PreAuthorize("isAuthenticated()")
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/allAd")
-    public ResponseEntity<?> getAllGamesAd() {
+    @GetMapping("/add-game")
+    public ResponseEntity<?> addGame() {
         return gameService.getAllGames();
     }
 }
