@@ -7,6 +7,7 @@ import com.vuckoapp.gamingservice.feigncalls.UserserviceCalls;
 import com.vuckoapp.gamingservice.model.Session;
 import com.vuckoapp.gamingservice.model.SessionStatus;
 import com.vuckoapp.gamingservice.model.SessionType;
+import com.vuckoapp.gamingservice.repository.GameRepository;
 import com.vuckoapp.gamingservice.repository.SessionRepository;
 import com.vuckoapp.gamingservice.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,21 @@ public class SeasonService {
 
     private final SessionRepository sessionRepository;
 
+    private final GameRepository gameRepository;
+
     public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request) {
-        // 1️⃣ Poziv user-service da proverimo da li korisnik može da kreira sesiju
+
+
+        // Check if game exists
+        if(!gameRepository.existsByGameName(request.gameName())) {
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Game does not exist");
+        }
+        // Check season name
+        if(sessionRepository.existsBySessionName(request.sessionName())) {
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session name already exists");
+        }
+
+        // Check if can make session
         SessionEligibilityDto eligibility = userserviceCalls.canCreateSession();
 
         if (eligibility.blocked()) {
@@ -35,10 +49,10 @@ public class SeasonService {
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Attendance must be >= 90%");
         }
 
-        // 2️⃣ Dobijamo detalje korisnika
+        //  Get user info
         UserDto user = userserviceCalls.getUserInfo();
 
-        // 3️⃣ Kreiranje sesije koristeći podatke iz DTO
+        // Build session
         Session session = Session.builder()
                 .creatorId(user.id())
                 .sessionName(request.sessionName())
@@ -50,10 +64,10 @@ public class SeasonService {
                 .sessionStatus(SessionStatus.SCHEDULED)
                 .build();
 
-        // 4️⃣ Čuvanje u bazi
+        // S ave  session
         sessionRepository.save(session);
 
-        // 5️⃣ Vraćanje odgovora sa sačuvanom sesijom
+        //
         return ResponseBuilder.build(HttpStatus.OK, "Gaming session created successfully");
     }
 

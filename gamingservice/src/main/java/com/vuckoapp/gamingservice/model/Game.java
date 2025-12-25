@@ -24,7 +24,7 @@ public class Game {
     @Column(name = "description",nullable = false, length = 300)
     private String gameDescription;
 
-    @Column(name = "game_type",nullable = false, length = 100)
+    @Column(name = "game_type",nullable = false, length = 100, unique = true)
     private String gameType;
 
     @PrePersist

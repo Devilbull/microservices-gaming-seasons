@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface  SessionRepository extends JpaRepository<Session, UUID> {
 
+    boolean existsBySessionName(String s);
 }

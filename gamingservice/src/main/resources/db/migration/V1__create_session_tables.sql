@@ -1,7 +1,7 @@
 CREATE TABLE sessions (
                           session_id UUID PRIMARY KEY,
                           creator_id UUID NOT NULL,
-                          session_name VARCHAR(100) NOT NULL,
+                          session_name VARCHAR(100) NOT NULL UNIQUE,
                           game_name VARCHAR(100) NOT NULL,
                           max_players INT NOT NULL,
                           session_type VARCHAR(20) NOT NULL,

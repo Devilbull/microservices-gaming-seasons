@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/sessions")
 @RequiredArgsConstructor
-public class GamingSessionController {
+public class SessionController {
 
     private final SeasonService seasonService;
 

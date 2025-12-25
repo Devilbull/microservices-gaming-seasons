@@ -19,7 +19,7 @@ public class Session {
     @Column(name = "creator_id", nullable = false)
     private UUID creatorId;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String sessionName;
 
     @Column(nullable = false, length = 100)
