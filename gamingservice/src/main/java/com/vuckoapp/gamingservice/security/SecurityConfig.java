@@ -1,6 +1,5 @@
 package com.vuckoapp.gamingservice.security;
 
-import com.vuckoapp.gamingservice.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

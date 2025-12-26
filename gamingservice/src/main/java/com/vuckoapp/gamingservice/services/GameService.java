@@ -5,6 +5,8 @@ import com.vuckoapp.gamingservice.dto.GameDto;
 import com.vuckoapp.gamingservice.model.Game;
 import com.vuckoapp.gamingservice.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +19,30 @@ public class GameService {
     private final GameRepository gameRepository;
     private final GameMapper gameMapper;
 
-    public List<GameDto> getAllGames() {
-        return gameRepository.findAll().stream()
-                .map(gameMapper::toDto).toList();
+
+
+    public Page<GameDto> getAllGames(
+            String gameType,
+            String gameName,
+            Pageable pageable
+    ) {
+        Page<Game> page;
+
+        if (gameType != null && gameName != null) {
+            page = gameRepository
+                    .findByGameTypeAndGameNameContainingIgnoreCase(
+                            gameType, gameName, pageable);
+        } else if (gameType != null) {
+            page = gameRepository
+                    .findByGameType(gameType, pageable);
+        } else if (gameName != null) {
+            page = gameRepository
+                    .findByGameNameContainingIgnoreCase(gameName, pageable);
+        } else {
+            page = gameRepository.findAll(pageable);
+        }
+
+        return page.map(gameMapper::toDto);
     }
 
     public GameDto getGameByName(String name){
@@ -33,7 +56,7 @@ public class GameService {
         if(gameRepository.existsByGameName(dto.gameName())){
             throw new RuntimeException("Game already exists");
         }
-
+        System.out.println(dto);
         Game game = gameMapper.toEntity(dto);
 
         gameRepository.save(game);

@@ -5,6 +5,9 @@ import com.vuckoapp.gamingservice.dto.GameDto;
 import com.vuckoapp.gamingservice.model.Game;
 import com.vuckoapp.gamingservice.services.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,11 +23,16 @@ public class GameController {
 
     private final GameService gameService;
 
-
     @GetMapping("/all")
-    public List<GameDto> getAllGames() {
-        return gameService.getAllGames();
+    public Page<GameDto> getAllGames(
+            @RequestParam(required = false) String gameType,
+            @RequestParam(required = false) String gameName,
+            Pageable pageable
+    ) {
+        return gameService.getAllGames(gameType, gameName, pageable);
     }
+
+
 
     //@PreAuthorize("isAuthenticated()")
     @PreAuthorize("hasRole('ADMIN')")
