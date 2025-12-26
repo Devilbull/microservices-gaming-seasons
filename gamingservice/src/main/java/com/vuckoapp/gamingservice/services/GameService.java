@@ -56,7 +56,9 @@ public class GameService {
         if(gameRepository.existsByGameName(dto.gameName())){
             throw new RuntimeException("Game already exists");
         }
-        System.out.println(dto);
+        if(dto.gameName() == null || dto.gameDescription() == null || dto.gameType() == null){
+            throw new RuntimeException("Did not provide all required fields");
+        }
         Game game = gameMapper.toEntity(dto);
 
         gameRepository.save(game);

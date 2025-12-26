@@ -44,6 +44,9 @@ public class GameController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete-game")
     public ResponseEntity<?> deleteGame(@RequestBody GameDeleteDto dto) {
+        if(dto.gameName() == null){
+            return ResponseEntity.badRequest().body(Map.of("message", "Game name is required"));
+        }
         gameService.deleteGameByName(dto.gameName());
         return ResponseEntity.ok(Map.of("message", "Game deleted successfully"));
     }
