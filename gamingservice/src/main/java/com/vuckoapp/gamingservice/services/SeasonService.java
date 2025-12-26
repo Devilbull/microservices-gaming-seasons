@@ -29,46 +29,7 @@ public class SeasonService {
     private final SessionRepository sessionRepository;
 
     private final GameRepository gameRepository;
-
-
-    @Retryable(
-            value = {
-                    feign.FeignException.class,
-                    java.net.ConnectException.class
-            },
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 1000)
-    )
-    public SessionEligibilityDto canCreateSessionWithRetry() {
-        return userserviceCalls.canCreateSession();
-    }
-
-    @Retryable(
-            value = {
-                    feign.FeignException.class,
-                    java.net.ConnectException.class
-            },
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 1000)
-    )
-    public UserDto getUserInfoWithRetry() {
-        return userserviceCalls.getUserInfo();
-    }
-
-    @Recover
-    public SessionEligibilityDto recoverEligibility(Exception ex) {
-        throw new DownstreamServiceException(
-                "UserService unavailable while checking session eligibility",
-                ex
-        );
-    }
-    @Recover
-    public UserDto recoverUser(Exception ex) {
-        throw new DownstreamServiceException(
-                "UserService unavailable while fetching user info",
-                ex
-        );
-    }
+    private final UserServiceRetry userServiceRetry;
 
     public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request) {
 
@@ -83,7 +44,7 @@ public class SeasonService {
         }
 
         // Check if can make session
-        SessionEligibilityDto eligibility = canCreateSessionWithRetry();
+        SessionEligibilityDto eligibility = userServiceRetry.canCreateSession();
 
         if (eligibility.blocked()) {
             return ResponseBuilder.build(HttpStatus.FORBIDDEN, "User is blocked");
@@ -94,7 +55,7 @@ public class SeasonService {
         }
 
         //  Get user info
-        UserDto user = getUserInfoWithRetry();
+        UserDto user = userServiceRetry.getUserInfo();
 
         // Build session
         Session session = Session.builder()
