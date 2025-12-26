@@ -23,13 +23,26 @@ public class GlobalExceptionHandler {
                 status
         );
     }
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    @ExceptionHandler(DownstreamServiceException.class)
+    public ResponseEntity<Object> handleDownstream(DownstreamServiceException ex) {
+        return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
+    @ExceptionHandler(feign.FeignException.class)
+    public ResponseEntity<Object> handleFeign(feign.FeignException ex) {
+
+        if (ex.status() == 401) return build(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if (ex.status() == 403) return build(HttpStatus.FORBIDDEN, "Forbidden");
+        return build(HttpStatus.BAD_GATEWAY, "UserService error: " + ex.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleRouteNotFound(NoHandlerFoundException ex) {
         return build(HttpStatus.NOT_FOUND, "Route not found");
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleRuntime(RuntimeException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 }

@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/session-eligibility")
-    public SessionEligibilityDtoGamingService canCreateSession(Authentication auth) {
-
+    public SessionEligibilityDtoGamingService canCreateSession(Authentication auth) throws InterruptedException {
+        //Thread.sleep(10000);
         UserDto user = userService.getByUsername(auth.getName());
 
         boolean blocked = Objects.equals(user.status(), UserStatus.BLOCKED.toString());

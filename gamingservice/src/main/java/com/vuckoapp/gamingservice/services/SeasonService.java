@@ -3,6 +3,7 @@ package com.vuckoapp.gamingservice.services;
 import com.vuckoapp.gamingservice.dto.CreateSessionRequest;
 import com.vuckoapp.gamingservice.dto.SessionEligibilityDto;
 import com.vuckoapp.gamingservice.dto.UserDto;
+import com.vuckoapp.gamingservice.exceptions.DownstreamServiceException;
 import com.vuckoapp.gamingservice.feigncalls.UserserviceCalls;
 import com.vuckoapp.gamingservice.model.Session;
 import com.vuckoapp.gamingservice.model.SessionStatus;
@@ -13,6 +14,9 @@ import com.vuckoapp.gamingservice.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +29,46 @@ public class SeasonService {
     private final SessionRepository sessionRepository;
 
     private final GameRepository gameRepository;
+
+
+    @Retryable(
+            value = {
+                    feign.FeignException.class,
+                    java.net.ConnectException.class
+            },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public SessionEligibilityDto canCreateSessionWithRetry() {
+        return userserviceCalls.canCreateSession();
+    }
+
+    @Retryable(
+            value = {
+                    feign.FeignException.class,
+                    java.net.ConnectException.class
+            },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public UserDto getUserInfoWithRetry() {
+        return userserviceCalls.getUserInfo();
+    }
+
+    @Recover
+    public SessionEligibilityDto recoverEligibility(Exception ex) {
+        throw new DownstreamServiceException(
+                "UserService unavailable while checking session eligibility",
+                ex
+        );
+    }
+    @Recover
+    public UserDto recoverUser(Exception ex) {
+        throw new DownstreamServiceException(
+                "UserService unavailable while fetching user info",
+                ex
+        );
+    }
 
     public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request) {
 
@@ -39,7 +83,7 @@ public class SeasonService {
         }
 
         // Check if can make session
-        SessionEligibilityDto eligibility = userserviceCalls.canCreateSession();
+        SessionEligibilityDto eligibility = canCreateSessionWithRetry();
 
         if (eligibility.blocked()) {
             return ResponseBuilder.build(HttpStatus.FORBIDDEN, "User is blocked");
@@ -50,7 +94,7 @@ public class SeasonService {
         }
 
         //  Get user info
-        UserDto user = userserviceCalls.getUserInfo();
+        UserDto user = getUserInfoWithRetry();
 
         // Build session
         Session session = Session.builder()

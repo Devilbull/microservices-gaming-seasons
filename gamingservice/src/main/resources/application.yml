@@ -5,7 +5,13 @@ spring:
   # Ako koristiš tajne (JWT_SECRET i slično)
   config:
     import: optional:classpath:environment/application-secrets.yml
-
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000   # milisekunde
+            read-timeout: 2000      # milisekunde
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -37,6 +43,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+
 
 eureka:
   client:
