@@ -23,6 +23,10 @@ public class GlobalExceptionHandler {
                 status
         );
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleRouteNotFound(NoHandlerFoundException ex) {

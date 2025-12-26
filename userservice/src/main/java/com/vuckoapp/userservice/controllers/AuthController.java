@@ -72,13 +72,13 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Logged out"));
     }
 
-    @PostMapping("/passwordForget")
+    @PostMapping("/password-forget")
     public ResponseEntity<?> passwordForget(@RequestBody PasswordForgetRequest body) {
         service.forgotPassword(body.email());
         return  ResponseEntity.ok(Map.of("message", "Email with token sent successfully"));
     }
 
-    @PostMapping("/passwordReset")
+    @PostMapping("/password-reset")
     public ResponseEntity<?> passwordReset(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         service.resetPassword(resetPasswordRequest);
         return  ResponseEntity.ok(Map.of("message", "Password reset successfully"));
