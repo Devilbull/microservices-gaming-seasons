@@ -53,6 +53,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
+
     public String extractUserId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -61,7 +62,6 @@ public class JwtUtil {
                 .getBody()
                 .get("userId", String.class);
     }
-
     public String extractRole(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -69,6 +69,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .get("role", String.class);
+    }
+
+    public String extractEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email", String.class);
     }
 
     public boolean isValid(String token) {

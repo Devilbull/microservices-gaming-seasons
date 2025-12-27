@@ -28,6 +28,9 @@ public class Session {
     @Column(nullable = false)
     private int maxPlayers;
 
+    @Column(nullable = false)
+    private int numberOfJoinedPlayers;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SessionType sessionType;

@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Participant {
+public class Participation {
     @Id
     @Column(name = "participant_id", columnDefinition = "uuid")
     private UUID id;

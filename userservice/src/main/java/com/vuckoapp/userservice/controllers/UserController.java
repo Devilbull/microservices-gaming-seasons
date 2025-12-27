@@ -1,9 +1,6 @@
 package com.vuckoapp.userservice.controllers;
 
-import com.vuckoapp.userservice.dto.ChangePasswordRequest;
-import com.vuckoapp.userservice.dto.SessionEligibilityDtoGamingService;
-import com.vuckoapp.userservice.dto.UpdateUserRequest; // DTO za update
-import com.vuckoapp.userservice.dto.UserDto;          // DTO za prikaz korisnika
+import com.vuckoapp.userservice.dto.*;
 import com.vuckoapp.userservice.model.Role;
 import com.vuckoapp.userservice.model.User;
 import com.vuckoapp.userservice.model.UserStatus;
@@ -12,7 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;                // Lombok anotacija
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication; // za pristup ulogovanom korisniku
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;    // @RestController, @RequestMapping, @GetMapping, @PutMapping
 
 import java.math.BigDecimal;
@@ -27,15 +26,20 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public UserDto getMe(Authentication auth) {
+    public UserDto getMe(@AuthenticationPrincipal JwtUserPrincipal principal) {
 
-        return userService.getByUsername(auth.getName());
+        return userService.getByUsername(principal.username());
     }
 
     @GetMapping("/session-eligibility")
-    public SessionEligibilityDtoGamingService canCreateSession(Authentication auth) throws InterruptedException {
+    public SessionEligibilityDtoGamingService canCreateSession(@AuthenticationPrincipal JwtUserPrincipal principal) throws InterruptedException {
         //Thread.sleep(10000);
-        UserDto user = userService.getByUsername(auth.getName());
+
+        if(principal.role().equals(Role.ADMIN.toString())){
+            return new SessionEligibilityDtoGamingService(true,true);
+        }
+
+        UserDto user = userService.getByUsername(principal.username());
 
         boolean blocked = Objects.equals(user.status(), UserStatus.BLOCKED.toString());
         boolean attendanceOk = true;
@@ -51,15 +55,15 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public UserDto updateMe(Authentication auth, @RequestBody UpdateUserRequest dto) {
-        return userService.updateUser(auth.getName(), dto);
+    public UserDto updateMe(@AuthenticationPrincipal JwtUserPrincipal principal, @RequestBody UpdateUserRequest dto) {
+        return userService.updateUser(principal.username(), dto);
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<?> changePassword(Authentication auth, @RequestBody ChangePasswordRequest req, HttpServletResponse response) {
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal JwtUserPrincipal principal, @RequestBody ChangePasswordRequest req, HttpServletResponse response) {
 
 
-            userService.changePassword(auth.getName(), req);
+            userService.changePassword(principal.username(), req);
 
             Cookie cookie = new Cookie("jwt", "");
             cookie.setHttpOnly(true);

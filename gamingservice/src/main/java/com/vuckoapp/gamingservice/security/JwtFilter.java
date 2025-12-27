@@ -1,5 +1,6 @@
 package com.vuckoapp.gamingservice.security;
 
+import com.vuckoapp.gamingservice.dto.JwtUserPrincipal;
 import com.vuckoapp.gamingservice.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,14 +47,16 @@ public class JwtFilter extends OncePerRequestFilter {
             String email = jwtUtil.extractEmail(token);
             String username = jwtUtil.extractUsername(token);
             String role = jwtUtil.extractRole(token);
+            String userId = jwtUtil.extractUserId(token);
+
+            JwtUserPrincipal  jwtUserPrincipal = new JwtUserPrincipal(userId, username, email, role);
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
-                            username,
+                            jwtUserPrincipal,
                             null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                    );
-            auth.setDetails(email);
+                    );            auth.setDetails(email);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 

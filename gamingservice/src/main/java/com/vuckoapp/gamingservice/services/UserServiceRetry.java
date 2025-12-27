@@ -10,6 +10,8 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceRetry {
@@ -20,8 +22,8 @@ public class UserServiceRetry {
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000)
     )
-    public SessionEligibilityDto canCreateSession() {
-        return userserviceCalls.canCreateSession();
+    public SessionEligibilityDto getEligibilityStats() {
+        return userserviceCalls.getEligibilityStats();
     }
 
     @Recover
@@ -45,6 +47,27 @@ public class UserServiceRetry {
     public UserDto recoverGetUserInfo(Exception ex) {
         throw new DownstreamServiceException(
                 "UserService unavailable while fetching user info",
+                ex
+        );
+    }
+
+
+    @Retryable(
+            value = {feign.FeignException.class, java.net.ConnectException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public void increaseNumberOfSeasonsJoined(UUID userId) {
+        userserviceCalls.increaseNumberOfSeasonsJoined(userId);
+    }
+
+    @Recover
+    public void recoverIncreaseNumberOfSeasonsJoined(
+            Exception ex,
+            UUID userId
+    ) {
+        throw new DownstreamServiceException(
+                "UserService unavailable while updating total sessions for user " + userId,
                 ex
         );
     }

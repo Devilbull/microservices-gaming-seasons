@@ -66,6 +66,9 @@ server:
   port: 0
   servlet:
     context-path: /api/notificationservice
-
+  error:
+    include-stacktrace: never
+    include-message: always
+    include-binding-errors: always
 jwt:
   secret: ${JWT_SECRET:22FEsmGhwcKD0FZkXrr69doFAayf62Vxx6rh0b0sl5qFuasdasdasd}
