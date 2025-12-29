@@ -4,6 +4,7 @@ import com.vuckoapp.gamingservice.dto.CreateSessionRequest;
 import com.vuckoapp.gamingservice.dto.SessionEligibilityDto;
 import com.vuckoapp.gamingservice.dto.UserDto;
 import com.vuckoapp.gamingservice.feigncalls.UserserviceCalls;
+import com.vuckoapp.gamingservice.messager.NotificationProducer;
 import com.vuckoapp.gamingservice.model.Participation;
 import com.vuckoapp.gamingservice.model.Session;
 import com.vuckoapp.gamingservice.model.SessionStatus;
@@ -28,8 +29,8 @@ public class SeasonService {
     private final ParticipationRepository participationRepository;
     private final GameRepository gameRepository;
     private final UserServiceRetry userServiceRetry;
-
-    public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request) {
+    private final NotificationProducer notificationProducer;
+    public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request, String email, String username) {
 
 
         // Check if game exists
@@ -49,6 +50,8 @@ public class SeasonService {
         }
 
         if (!eligibility.attendanceOk()) {
+            ///  Email notification
+            notificationProducer.sendMailThatInformsUserHasLowerAttendance(email,username);
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Attendance must be >= 90%");
         }
 
@@ -74,18 +77,24 @@ public class SeasonService {
         return ResponseBuilder.build(HttpStatus.OK, "Gaming session created successfully");
     }
 
-    public ResponseEntity<?> joinSessionIfUserPermitted(UUID sessionID, UUID userID) {
+    public ResponseEntity<?>    joinSessionIfUserPermitted(UUID sessionID, UUID userID, String email, String username) {
         // check if blocked
         SessionEligibilityDto eligibility = userServiceRetry.getEligibilityStats();
 
         if (eligibility.blocked()) {
+
             return ResponseBuilder.build(HttpStatus.FORBIDDEN, "User is blocked");
         }
+
         // check season exists and is open
         Session session = sessionRepository.findById(sessionID).orElseThrow(() ->
                 new RuntimeException("Session not found"));
         if(session.getSessionStatus() != SessionStatus.SCHEDULED || session.getSessionType() != SessionType.OPEN){
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session is not open for joining");
+        }
+        // check if owner
+        if(session.getCreatorId().equals(userID)){
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Owner cannot join their own session");
         }
         // check max players not exceeded
         if(session.getNumberOfJoinedPlayers() >= session.getMaxPlayers()){
@@ -104,9 +113,11 @@ public class SeasonService {
 
         // Add to participants
         Participation participant = Participation.builder()
-                .userId(userID).sessionId(sessionID).build();
+                .userId(userID).sessionId(sessionID).email(email).build();
 
         participationRepository.save(participant);
+        ///  To do sendMail
+        notificationProducer.sendMailIfUserHasJoinedSession(email,username,session.getSessionName());
         return ResponseBuilder.build(HttpStatus.OK, "User joined session successfully");
 
     }

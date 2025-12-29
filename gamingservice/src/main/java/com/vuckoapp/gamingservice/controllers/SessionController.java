@@ -21,14 +21,14 @@ public class SessionController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create-session")
-    public ResponseEntity<?> createSession(@Valid @RequestBody CreateSessionRequest request) {
-        return seasonService.createSessionIfUserPermitted(request);
+    public ResponseEntity<?> createSession(@Valid @RequestBody CreateSessionRequest request,@AuthenticationPrincipal JwtUserPrincipal principal) {
+        return seasonService.createSessionIfUserPermitted(request, principal.email(),principal.username());
     }
 
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{sessionId}/join")
     public ResponseEntity<?> joinSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
-        return seasonService.joinSessionIfUserPermitted(sessionId,UUID.fromString(principal.id()));
+        return seasonService.joinSessionIfUserPermitted(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username());
     }
 }

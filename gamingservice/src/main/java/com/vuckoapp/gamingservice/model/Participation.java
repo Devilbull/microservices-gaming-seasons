@@ -23,6 +23,9 @@ public class Participation {
     @Column(name = "session_id",nullable = false)
     private UUID sessionId;
 
+    @Column(nullable = false, unique = true, length = 120)
+    private String email;
+
     @PrePersist
     public void prePersist() {
         if (this.id == null) {

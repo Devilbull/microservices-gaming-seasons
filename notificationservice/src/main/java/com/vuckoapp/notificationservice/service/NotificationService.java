@@ -48,6 +48,7 @@ public class NotificationService {
             case ACTIVATION_EMAIL -> "Account Activation";
             case PASSWORD_RESET -> "Password Reset";
             case SESSION_INVITATION -> "Session Invitation";
+            case SESSION_JOINED -> "Session Joined";
             default -> "System Notification";
         };
     }
@@ -88,7 +89,21 @@ public class NotificationService {
                    Team
                    """.formatted(username, token);
             }
+            case SESSION_JOINED -> {
+                String username = (String) payload.get("username");
+                String gameName = (String) payload.get("gameName");
 
+                yield """
+                   Hello %s,
+                   
+                   You have successfully joined the session for the game: %s.
+                
+                   Get ready to play and have fun!
+                
+                   Regards,
+                   Team
+                   """.formatted(username, gameName);
+            }
             default -> "New notification.";
         };
     }

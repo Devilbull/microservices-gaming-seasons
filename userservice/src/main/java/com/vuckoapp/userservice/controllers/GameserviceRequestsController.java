@@ -5,11 +5,8 @@ import com.vuckoapp.userservice.dto.JwtUserPrincipal;
 import com.vuckoapp.userservice.services.GameServiceRequestsService;
 import com.vuckoapp.userservice.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.protocol.HTTP;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/gameservice")
 @RequiredArgsConstructor
-public class GameServiceRequestsController {
+public class GameserviceRequestsController {
     private final GameServiceRequestsService gameServiceRequestsService;
 
     @PostMapping("/{userId}/update-total-sessions")
