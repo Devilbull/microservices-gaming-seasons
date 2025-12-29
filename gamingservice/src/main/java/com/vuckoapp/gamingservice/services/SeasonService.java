@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -119,6 +120,36 @@ public class SeasonService {
         ///  To do sendMail
         notificationProducer.sendMailIfUserHasJoinedSession(email,username,session.getSessionName());
         return ResponseBuilder.build(HttpStatus.OK, "User joined session successfully");
+
+    }
+
+    public ResponseEntity<?> cancelSession(UUID sessionID, UUID userID, String email, String username, String role) {
+
+
+
+        // check season exists and is able to canceled
+        Session session = sessionRepository.findById(sessionID).orElseThrow(() ->
+                new RuntimeException("Session not found"));
+        if(session.getSessionStatus() != SessionStatus.SCHEDULED ){
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session is cancelled or already finished");
+        }
+
+        // check if admin or owner
+        if(!session.getCreatorId().equals(userID) && !role.equals("ADMIN")){
+            return ResponseBuilder.build(HttpStatus.FORBIDDEN, "Only owner or admin can cancel the session");
+        }
+        // set cancelled
+        session.setSessionStatus(SessionStatus.CANCELLED);
+        sessionRepository.save(session);
+        // Notify participants
+        ArrayList<String> emails = new ArrayList<>();
+
+        for(Participation p : participationRepository.findAllBySessionId(sessionID)){
+            emails.add(p.getEmail());
+        }
+        ///  To do sendMail
+        notificationProducer.sendMailToNotifyUsersThatSeasionIsCanceled(emails,session.getSessionName());
+        return ResponseBuilder.build(HttpStatus.OK, "Session cancelled successfully");
 
     }
 }

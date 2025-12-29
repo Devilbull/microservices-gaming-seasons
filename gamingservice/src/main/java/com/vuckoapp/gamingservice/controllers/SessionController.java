@@ -31,4 +31,10 @@ public class SessionController {
     public ResponseEntity<?> joinSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
         return seasonService.joinSessionIfUserPermitted(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username());
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{sessionId}/cancel")
+    public ResponseEntity<?> cancelSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
+        return seasonService.cancelSession(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username(), principal.role());
+    }
 }

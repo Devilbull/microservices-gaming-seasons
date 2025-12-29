@@ -49,6 +49,7 @@ public class NotificationService {
             case PASSWORD_RESET -> "Password Reset";
             case SESSION_INVITATION -> "Session Invitation";
             case SESSION_JOINED -> "Session Joined";
+            case SESSION_CANCELLATION -> "Session Canceled";
             default -> "System Notification";
         };
     }
@@ -104,10 +105,44 @@ public class NotificationService {
                    Team
                    """.formatted(username, gameName);
             }
+            case SESSION_CANCELLATION -> {
+                String sessionName = (String) payload.get("sessionName");
+                yield """
+                   Hello,
+                   
+                   The gaming session "%s" has been canceled.
+                   
+                   We apologize for the inconvenience.
+                   
+                   Regards,
+                   Team
+                   """.formatted(sessionName);
+            }
             default -> "New notification.";
         };
     }
 
 
+    @SuppressWarnings("unchecked")
+    public void sendEmailsForSessionCancellation(NotificationRequest request) {
+
+        Object emailsObj = request.getPayload().get("emails");
+        if (emailsObj == null) {
+            throw new IllegalArgumentException("Emails list is missing in payload");
+        }
+
+        var emails = (java.util.List<String>) emailsObj;
+
+        for (String email : emails) {
+            NotificationRequest singleRequest = NotificationRequest.builder()
+                    .toEmail(email)
+                    .type(NotificationType.SESSION_CANCELLATION)
+                    .sourceService(request.getSourceService())
+                    .payload(request.getPayload())
+                    .build();
+
+            sendNotification(singleRequest);
+        }
+    }
 }
 
