@@ -28,14 +28,13 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+    private  final int PORT = 5173;
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "http://localhost:7155",
-                "http://localhost:5173"
+                "http://localhost:"+PORT
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -46,17 +45,6 @@ public class SecurityConfig {
         return new CorsWebFilter(source);
     }
 
-    @Bean
-    public GlobalFilter corsGlobalFilter() {
-        return (exchange, chain) -> {
-            exchange.getResponse().beforeCommit(() -> {
-                exchange.getResponse().getHeaders().set("Access-Control-Allow-Origin", "http://localhost:7155");
-                exchange.getResponse().getHeaders().set("Access-Control-Allow-Credentials", "true");
-                return chain.filter(exchange).then();
-            });
-            return chain.filter(exchange);
-        };
-    }
 
 
 }

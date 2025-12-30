@@ -59,20 +59,5 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Front access
-    @Bean
-    public org.springframework.web.filter.CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(
-                "http://localhost:7155",
-                "http://localhost:5173"
-        ));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        source.registerCorsConfiguration("/**", config);
-        return new org.springframework.web.filter.CorsFilter(source);
-    }
 }
