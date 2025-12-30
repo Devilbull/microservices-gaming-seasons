@@ -1,8 +1,6 @@
 package com.vuckoapp.gamingservice.services;
 
-import com.vuckoapp.gamingservice.dto.CreateSessionRequest;
-import com.vuckoapp.gamingservice.dto.SessionEligibilityDto;
-import com.vuckoapp.gamingservice.dto.UserDto;
+import com.vuckoapp.gamingservice.dto.*;
 import com.vuckoapp.gamingservice.feigncalls.UserserviceCalls;
 import com.vuckoapp.gamingservice.messager.NotificationProducer;
 import com.vuckoapp.gamingservice.model.Participation;
@@ -13,7 +11,11 @@ import com.vuckoapp.gamingservice.repository.GameRepository;
 import com.vuckoapp.gamingservice.repository.ParticipationRepository;
 import com.vuckoapp.gamingservice.repository.SessionRepository;
 import com.vuckoapp.gamingservice.utils.ResponseBuilder;
+import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,78 @@ public class SeasonService {
     private final GameRepository gameRepository;
     private final UserServiceRetry userServiceRetry;
     private final NotificationProducer notificationProducer;
+    private final SessionMapper sessionMapper;
+
+    public Page<SessionDto> getAllSessions(SessionSearchDto req, Pageable pageable, UUID currentUserId) {
+        Specification<Session> spec = Specification.where(null);
+
+
+        if (req.gameName() != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("gameName"), req.gameName()));
+        }
+
+
+        if (req.sessionType() != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("sessionType"), req.sessionType()));
+        }
+
+
+        if (req.maxNumPlayers() != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.lessThanOrEqualTo(root.get("maxPlayers"), req.maxNumPlayers()));
+        }
+
+
+        if (req.keywords() != null && !req.keywords().isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("description")), "%" + req.keywords().toLowerCase() + "%"));
+        }
+
+
+        if (req.isJoined() != null && currentUserId != null) {
+            if (req.isJoined()) {
+                spec = spec.and((root, query, cb) -> {
+                    Join<Session, Participation> participants = root.join("participants");
+                    return cb.equal(participants.get("userId"), currentUserId);
+                });
+            } else {
+                spec = spec.and((root, query, cb) -> {
+                    jakarta.persistence.criteria.Subquery<UUID> subquery = query.subquery(UUID.class);
+                    jakarta.persistence.criteria.Root<Participation> pRoot = subquery.from(Participation.class);
+                    subquery.select(pRoot.get("sessionId"))
+                            .where(cb.equal(pRoot.get("userId"), currentUserId));
+                    return cb.not(root.get("id").in(subquery));
+                });
+            }
+        }
+
+        return sessionRepository.findAll(spec, pageable)
+                .map(session -> {
+                    SessionDto dto = sessionMapper.toDto(session);
+
+                    boolean joined = false;
+                    if (currentUserId != null && session.getParticipants() != null) {
+                        joined = session.getParticipants().stream()
+                                .anyMatch(p -> p.getUserId().equals(currentUserId));
+                    }
+
+                    return new SessionDto(
+                            dto.sessionId(),
+                            dto.sessionName(),
+                            dto.gameName(),
+                            dto.description(),
+                            dto.sessionType(),
+                            dto.maxPlayers(),
+                            dto.currentPlayers(),
+                            dto.startTime(),
+                            joined
+                    );
+                });
+    }
+
+
     public ResponseEntity<?> createSessionIfUserPermitted(CreateSessionRequest request, String email, String username) {
 
 

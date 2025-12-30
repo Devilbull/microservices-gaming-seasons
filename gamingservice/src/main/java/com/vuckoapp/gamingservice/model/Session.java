@@ -45,6 +45,10 @@ public class Session {
     @Column(nullable = false)
     private SessionStatus sessionStatus;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id")
+    private java.util.List<Participation> participants = new java.util.ArrayList<>();
+
     @PrePersist
     public void prePersist() {
         if (this.id == null) {

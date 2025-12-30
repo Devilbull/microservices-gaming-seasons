@@ -2,9 +2,13 @@ package com.vuckoapp.gamingservice.controllers;
 
 import com.vuckoapp.gamingservice.dto.CreateSessionRequest;
 import com.vuckoapp.gamingservice.dto.JwtUserPrincipal;
+import com.vuckoapp.gamingservice.dto.SessionDto;
+import com.vuckoapp.gamingservice.dto.SessionSearchDto;
 import com.vuckoapp.gamingservice.services.SeasonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,5 +40,15 @@ public class SessionController {
     @PostMapping("/{sessionId}/cancel")
     public ResponseEntity<?> cancelSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
         return seasonService.cancelSession(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username(), principal.role());
+    }
+
+    @GetMapping("/all")
+    public Page<SessionDto> getAllSessions(
+            SessionSearchDto searchRequest,
+            Pageable pageable,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ){
+        UUID currentUserId = (principal != null) ? UUID.fromString(principal.id()) : null;
+        return seasonService.getAllSessions(searchRequest, pageable, currentUserId);
     }
 }
