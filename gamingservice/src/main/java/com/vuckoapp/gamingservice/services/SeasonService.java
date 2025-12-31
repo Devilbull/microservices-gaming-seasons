@@ -3,12 +3,10 @@ package com.vuckoapp.gamingservice.services;
 import com.vuckoapp.gamingservice.dto.*;
 import com.vuckoapp.gamingservice.feigncalls.UserserviceCalls;
 import com.vuckoapp.gamingservice.messager.NotificationProducer;
-import com.vuckoapp.gamingservice.model.Participation;
-import com.vuckoapp.gamingservice.model.Session;
-import com.vuckoapp.gamingservice.model.SessionStatus;
-import com.vuckoapp.gamingservice.model.SessionType;
+import com.vuckoapp.gamingservice.model.*;
 import com.vuckoapp.gamingservice.repository.GameRepository;
 import com.vuckoapp.gamingservice.repository.ParticipationRepository;
+import com.vuckoapp.gamingservice.repository.SessionInviteRepository;
 import com.vuckoapp.gamingservice.repository.SessionRepository;
 import com.vuckoapp.gamingservice.utils.ResponseBuilder;
 import jakarta.persistence.criteria.Join;
@@ -20,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public class SeasonService {
     private final UserServiceRetry userServiceRetry;
     private final NotificationProducer notificationProducer;
     private final SessionMapper sessionMapper;
+    private final SessionInviteRepository sessionInviteRepository;
 
     public Page<SessionDto> getAllSessions(SessionSearchDto req, Pageable pageable, UUID currentUserId) {
         Specification<Session> spec = Specification.where(null);
@@ -225,5 +227,76 @@ public class SeasonService {
         notificationProducer.sendMailToNotifyUsersThatSeasionIsCanceled(emails,session.getSessionName());
         return ResponseBuilder.build(HttpStatus.OK, "Session cancelled successfully");
 
+    }
+
+    public ResponseEntity<?> callToSession(InviteRequest request, UUID organizerId){
+            Session session = sessionRepository.findById(request.sessionId()).orElseThrow(() ->
+                    new RuntimeException("Session not found"));
+
+            if(!session.getCreatorId().equals(organizerId)){
+                throw new RuntimeException("Only the organizer can invite players");
+            }
+
+            String token = UUID.randomUUID().toString();
+
+        SessionInvite sessionInvite = SessionInvite.builder()
+                .sessionId(request.sessionId())
+                .invitedUserId(request.invitedUserId())
+                .token(token).used(false).build();
+
+        sessionInviteRepository.save(sessionInvite);
+
+        UserDto user = userServiceRetry.getUserById(request.invitedUserId());
+
+
+
+        notificationProducer.sendSessionInvitationMailToUser(
+                user.email(),
+                user.username(),
+                session.getSessionName(),
+                token
+        );
+
+        return ResponseBuilder.build(HttpStatus.OK, "Session invitation successfully");
+    }
+
+    public ResponseEntity<?> acceptInvite(String token, UUID currentUserId) {
+        SessionInvite sessionInvite = sessionInviteRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid invitation token"));
+
+        if (sessionInvite.isUsed()) {
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "This invitation has already been used");
+        }
+
+        if (!sessionInvite.getInvitedUserId().equals(currentUserId)) {
+            return ResponseBuilder.build(HttpStatus.FORBIDDEN, "This invitation was sent to another user");
+        }
+
+        if (sessionInvite.getExpiryDate() != null && sessionInvite.getExpiryDate().isBefore(LocalDateTime.now())) {
+            return ResponseBuilder.build(HttpStatus.GONE, "This invitation has expired");
+        }
+
+        Session session = sessionRepository.findById(sessionInvite.getSessionId())
+                .orElseThrow(() -> new RuntimeException("Session no longer exists"));
+
+        if (session.getParticipants().size() >= session.getMaxPlayers()) {
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session is full");
+        }
+
+        UserDto user = userServiceRetry.getUserById(currentUserId);
+
+        Participation participation = Participation.builder()
+                .userId(currentUserId)
+                .sessionId(session.getId())
+                .email(user.email())
+                .build();
+        participationRepository.save(participation);
+
+        sessionInvite.setUsed(true);
+        sessionInviteRepository.save(sessionInvite);
+
+        userServiceRetry.increaseNumberOfSeasonsJoined(currentUserId);
+
+        return ResponseBuilder.build(HttpStatus.OK, "Successfully joined the session via invite");
     }
 }

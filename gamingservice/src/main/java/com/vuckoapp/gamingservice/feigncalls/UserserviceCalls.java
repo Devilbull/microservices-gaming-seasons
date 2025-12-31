@@ -26,5 +26,8 @@ public interface UserserviceCalls {
 
     @PostMapping("/api/userservice/gameservice/{userId}/update-total-sessions")
     void increaseNumberOfSeasonsJoined(@PathVariable UUID userId);
+
+    @GetMapping("/api/userservice/users/{userId}/basic-info")
+    UserDto getUserById(@PathVariable("userId") UUID userId);
 }
 

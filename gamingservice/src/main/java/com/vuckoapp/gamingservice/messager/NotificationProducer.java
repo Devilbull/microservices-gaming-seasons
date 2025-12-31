@@ -71,4 +71,24 @@ public class NotificationProducer {
         );
     }
 
+    public void sendSessionInvitationMailToUser(String email, String username, String sessionName, String token) {
+        NotificationRequest request = NotificationRequest.builder()
+                .toEmail(email)
+                .type(GamingNotificationType.SESSION_INVITATION)
+                .sourceService("GAMING_SERVICE")
+                .payload(Map.of(
+                        "username", username,
+                        "sessionName", sessionName,
+                        "token", token,
+                        "inviteLink", "http://tvoj-frontend.com/accept-invite?token=" + token
+                ))
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                RabbitProducerConfig.EXCHANGE,
+                RabbitProducerConfig.ROUTING_KEY,
+                request
+        );
+    }
+
 }

@@ -71,5 +71,22 @@ public class UserServiceRetry {
                 ex
         );
     }
+
+    @Retryable(
+            value = {feign.FeignException.class, java.net.ConnectException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public UserDto getUserById(UUID userId) {
+        return userserviceCalls.getUserById(userId);
+    }
+
+    @Recover
+    public UserDto recoverGetUserById(Exception ex, UUID userId) {
+        throw new DownstreamServiceException(
+                "UserService unavailable while fetching info for user: " + userId,
+                ex
+        );
+    }
 }
 

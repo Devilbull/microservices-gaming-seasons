@@ -1,9 +1,6 @@
 package com.vuckoapp.gamingservice.controllers;
 
-import com.vuckoapp.gamingservice.dto.CreateSessionRequest;
-import com.vuckoapp.gamingservice.dto.JwtUserPrincipal;
-import com.vuckoapp.gamingservice.dto.SessionDto;
-import com.vuckoapp.gamingservice.dto.SessionSearchDto;
+import com.vuckoapp.gamingservice.dto.*;
 import com.vuckoapp.gamingservice.services.SeasonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +47,22 @@ public class SessionController {
     ){
         UUID currentUserId = (principal != null) ? UUID.fromString(principal.id()) : null;
         return seasonService.getAllSessions(searchRequest, pageable, currentUserId);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/call-to-session")
+    public ResponseEntity<?> callToSession(
+            @RequestBody InviteRequest inviteRequest,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ){
+        return seasonService.callToSession(inviteRequest,UUID.fromString(principal.id()));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/accept-invite")
+    public ResponseEntity<?> acceptInvite(
+            @RequestParam String token,
+            @AuthenticationPrincipal JwtUserPrincipal principal) {
+        return seasonService.acceptInvite(token, UUID.fromString(principal.id()));
     }
 }
