@@ -50,6 +50,7 @@ public class NotificationService {
             case SESSION_INVITATION -> "Session Invitation";
             case SESSION_JOINED -> "Session Joined";
             case SESSION_CANCELLATION -> "Session Canceled";
+
             default -> "System Notification";
         };
     }
@@ -117,6 +118,23 @@ public class NotificationService {
                    Regards,
                    Team
                    """.formatted(sessionName);
+            }
+            case SESSION_INVITATION ->{
+                String username = (String) payload.get("username");
+                String sessionName = (String) payload.get("sessionName");
+                String inviteLink = (String) payload.get("inviteLink");
+
+                yield """
+                   Hello %s,
+                   
+                   You have been invited to join the gaming session: %s.
+                   
+                   Click the link below to accept the invitation:
+                   %s
+                   
+                   Regards,
+                   Team
+                   """.formatted(username, sessionName, inviteLink);
             }
             default -> "New notification.";
         };

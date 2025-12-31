@@ -23,15 +23,16 @@ public class GlobalExceptionHandler {
 
         // Dodaj CORS header-e
         return ResponseEntity.status(status)
-                .header("Access-Control-Allow-Origin", "http://localhost:7155")
-                .header("Access-Control-Allow-Credentials", "true")
                 .body(body);
     }
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleRouteNotFound(NoHandlerFoundException ex) {
         return build(HttpStatus.NOT_FOUND, "Route not found");
     }
-
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex) {
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage());

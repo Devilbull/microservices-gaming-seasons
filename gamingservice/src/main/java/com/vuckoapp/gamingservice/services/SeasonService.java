@@ -238,6 +238,7 @@ public class SeasonService {
             }
 
             String token = UUID.randomUUID().toString();
+        UserDto user = userServiceRetry.getUserById(request.invitedUserId());
 
         SessionInvite sessionInvite = SessionInvite.builder()
                 .sessionId(request.sessionId())
@@ -246,7 +247,7 @@ public class SeasonService {
 
         sessionInviteRepository.save(sessionInvite);
 
-        UserDto user = userServiceRetry.getUserById(request.invitedUserId());
+
 
 
 
@@ -260,7 +261,7 @@ public class SeasonService {
         return ResponseBuilder.build(HttpStatus.OK, "Session invitation successfully");
     }
 
-    public ResponseEntity<?> acceptInvite(String token, UUID currentUserId) {
+    public ResponseEntity<?> acceptInvite(String token) {
         SessionInvite sessionInvite = sessionInviteRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid invitation token"));
 
@@ -268,9 +269,7 @@ public class SeasonService {
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "This invitation has already been used");
         }
 
-        if (!sessionInvite.getInvitedUserId().equals(currentUserId)) {
-            return ResponseBuilder.build(HttpStatus.FORBIDDEN, "This invitation was sent to another user");
-        }
+
 
         if (sessionInvite.getExpiryDate() != null && sessionInvite.getExpiryDate().isBefore(LocalDateTime.now())) {
             return ResponseBuilder.build(HttpStatus.GONE, "This invitation has expired");
@@ -282,11 +281,18 @@ public class SeasonService {
         if (session.getParticipants().size() >= session.getMaxPlayers()) {
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session is full");
         }
+        UUID userId = sessionInvite.getInvitedUserId() ;
 
-        UserDto user = userServiceRetry.getUserById(currentUserId);
+
+
+        if (participationRepository.existsByUserIdAndSessionId(userId, session.getId())) {
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "User already joined this session");
+        }
+
+        UserDto user = userServiceRetry.getUserById(userId);
 
         Participation participation = Participation.builder()
-                .userId(currentUserId)
+                .userId(userId)
                 .sessionId(session.getId())
                 .email(user.email())
                 .build();
@@ -295,7 +301,7 @@ public class SeasonService {
         sessionInvite.setUsed(true);
         sessionInviteRepository.save(sessionInvite);
 
-        userServiceRetry.increaseNumberOfSeasonsJoined(currentUserId);
+        userServiceRetry.increaseNumberOfSeasonsJoined(userId);
 
         return ResponseBuilder.build(HttpStatus.OK, "Successfully joined the session via invite");
     }

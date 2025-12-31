@@ -104,5 +104,14 @@ public class UserService {
         repo.save(user);
     }
 
-
+    @Transactional
+    public UserDto getById(UUID id) {
+        User user = repo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException());
+        GamerStats statsDto = null;
+        if(user.getRole().equals(Role.GAMER)){
+            statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);
+        }
+        return userMapper.toDto(user,statsDto);
+    }
 }

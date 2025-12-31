@@ -22,4 +22,6 @@ public class SessionInvite {
 
     private boolean used = false;
     private LocalDateTime expiryDate;
+
+
 }

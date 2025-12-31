@@ -21,13 +21,15 @@ public interface UserserviceCalls {
     SessionEligibilityDto getEligibilityStats();
 
 
-    @GetMapping("/api/userservice/users/me")
-    UserDto getUserInfo();
 
     @PostMapping("/api/userservice/gameservice/{userId}/update-total-sessions")
     void increaseNumberOfSeasonsJoined(@PathVariable UUID userId);
 
-    @GetMapping("/api/userservice/users/{userId}/basic-info")
+    @GetMapping("/api/userservice/users/me")
+    UserDto getUserInfo();
+
+
+    @PostMapping("/api/userservice/gameservice/{userId}/user-info")
     UserDto getUserById(@PathVariable("userId") UUID userId);
 }
 

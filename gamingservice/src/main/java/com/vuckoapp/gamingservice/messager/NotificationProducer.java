@@ -80,7 +80,7 @@ public class NotificationProducer {
                         "username", username,
                         "sessionName", sessionName,
                         "token", token,
-                        "inviteLink", "http://tvoj-frontend.com/accept-invite?token=" + token
+                        "inviteLink", "http://localhost:8080/api/gamingservice/sessions/accept-invite?token=" + token
                 ))
                 .build();
 

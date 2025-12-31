@@ -58,11 +58,10 @@ public class SessionController {
         return seasonService.callToSession(inviteRequest,UUID.fromString(principal.id()));
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/accept-invite")
+//    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/accept-invite")
     public ResponseEntity<?> acceptInvite(
-            @RequestParam String token,
-            @AuthenticationPrincipal JwtUserPrincipal principal) {
-        return seasonService.acceptInvite(token, UUID.fromString(principal.id()));
+            @RequestParam String token) {
+        return seasonService.acceptInvite(token);
     }
 }
