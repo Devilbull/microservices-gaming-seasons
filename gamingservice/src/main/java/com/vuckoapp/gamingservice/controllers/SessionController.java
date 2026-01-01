@@ -1,7 +1,7 @@
 package com.vuckoapp.gamingservice.controllers;
 
 import com.vuckoapp.gamingservice.dto.*;
-import com.vuckoapp.gamingservice.services.SeasonService;
+import com.vuckoapp.gamingservice.services.SessionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SessionController {
 
-    private final SeasonService seasonService;
+    private final SessionService seasonService;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create-session")
@@ -64,4 +64,23 @@ public class SessionController {
             @RequestParam String token) {
         return seasonService.acceptInvite(token);
     }
+
+    @PostMapping("/lock-session")
+    public ResponseEntity<?> lockSession(
+            @RequestBody SessionLockDto sessionLockDto,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ){
+        return seasonService.lockSession(sessionLockDto,UUID.fromString(principal.id()));
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

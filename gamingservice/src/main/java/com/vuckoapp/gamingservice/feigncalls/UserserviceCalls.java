@@ -1,6 +1,7 @@
 package com.vuckoapp.gamingservice.feigncalls;
 
 import com.vuckoapp.gamingservice.config.FeignCookieConfig;
+import com.vuckoapp.gamingservice.dto.SessionAttendanceDto;
 import com.vuckoapp.gamingservice.dto.SessionEligibilityDto;
 import com.vuckoapp.gamingservice.dto.UserDto;
 
@@ -8,6 +9,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
@@ -31,5 +33,8 @@ public interface UserserviceCalls {
 
     @PostMapping("/api/userservice/gameservice/{userId}/user-info")
     UserDto getUserById(@PathVariable("userId") UUID userId);
+
+    @PostMapping("/api/userservice/gameservice/update-attendance")
+    void updateAttendance(@RequestBody SessionAttendanceDto sessionAttendanceDto);
 }
 

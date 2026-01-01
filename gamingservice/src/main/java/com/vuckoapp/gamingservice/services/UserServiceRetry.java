@@ -1,5 +1,6 @@
 package com.vuckoapp.gamingservice.services;
 
+import com.vuckoapp.gamingservice.dto.SessionAttendanceDto;
 import com.vuckoapp.gamingservice.dto.SessionEligibilityDto;
 import com.vuckoapp.gamingservice.dto.UserDto;
 import com.vuckoapp.gamingservice.exceptions.DownstreamServiceException;
@@ -87,6 +88,20 @@ public class UserServiceRetry {
                 "UserService unavailable while fetching info for user: " + userId,
                 ex
         );
+    }
+
+    @Retryable(
+            value = {feign.FeignException.class, java.net.ConnectException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public void processSessionAttendance(SessionAttendanceDto sessionAttendanceDto) {
+        userserviceCalls.updateAttendance(sessionAttendanceDto);
+    }
+
+    @Recover
+    public void recoverAttendance(Exception ex, SessionAttendanceDto sessionAttendanceDto) {
+        throw new DownstreamServiceException("User service is down, attendance not updated", ex);
     }
 }
 

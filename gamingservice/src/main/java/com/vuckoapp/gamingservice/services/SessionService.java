@@ -16,17 +16,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class SeasonService {
+public class SessionService {
     private final UserserviceCalls userserviceCalls;
 
     private final SessionRepository sessionRepository;
@@ -305,4 +307,65 @@ public class SeasonService {
 
         return ResponseBuilder.build(HttpStatus.OK, "Successfully joined the session via invite");
     }
+
+    @Transactional
+    public ResponseEntity<?> lockSession(SessionLockDto sessionLockDto, UUID uuid) {
+        Session session = sessionRepository.findById(sessionLockDto.sessionId()).orElse(null);
+
+        if (session == null) {
+            return ResponseBuilder.build(HttpStatus.NOT_FOUND, "Session not found");
+        }
+
+        if(!session.getCreatorId().equals(uuid)){
+            return ResponseBuilder.build(HttpStatus.FORBIDDEN, "Only owner can can lock the session");
+        }
+
+        if(session.getSessionStatus() == SessionStatus.FINISHED){
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session has already been finished");
+
+        }
+
+        if(session.getParticipants().isEmpty()){
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Session cannot be empty");
+        }
+
+        List<String> presentUsers = new ArrayList<>();
+        List<String> absentUsers = new ArrayList<>();
+
+        for(Participation p : session.getParticipants()){
+            if(sessionLockDto.emails().contains(p.getEmail())){
+                presentUsers.add(p.getEmail());
+            }else{
+                absentUsers.add(p.getEmail());
+            }
+        }
+
+        if(presentUsers.isEmpty()){
+            return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Cannot finish session with 0 attendees");
+        }
+
+        SessionAttendanceDto sessionAttendanceDto = new SessionAttendanceDto(
+                uuid,
+                presentUsers,
+                absentUsers
+        );
+
+        userServiceRetry.processSessionAttendance(sessionAttendanceDto);
+
+
+        session.setSessionStatus(SessionStatus.FINISHED);
+        sessionRepository.save(session);
+
+
+        return ResponseBuilder.build(HttpStatus.OK, "Session has been successfully locked");
+    }
+
+
+
+
+
+
+
+
+
 }
