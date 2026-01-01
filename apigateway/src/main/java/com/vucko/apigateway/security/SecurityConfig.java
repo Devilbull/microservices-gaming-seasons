@@ -1,6 +1,5 @@
 package com.vucko.apigateway.security;
 
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,17 +17,17 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(csrf -> csrf.disable()) // Isključujemo CSRF za API Gateway
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        // Dozvoli preflight OPTIONS za sve
+
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        // Dozvoli sve ostale zahteve (ili možeš dodati specifične rute)
+
                         .anyExchange().permitAll()
                 );
 
         return http.build();
     }
-    private  final int PORT = 5173;
+    private static final int PORT = 5173;
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -37,7 +36,7 @@ public class SecurityConfig {
                 "http://localhost:"+PORT
         ));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // PATCH dodano
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
