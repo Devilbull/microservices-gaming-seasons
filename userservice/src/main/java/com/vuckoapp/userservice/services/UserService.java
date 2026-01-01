@@ -2,6 +2,7 @@
 package com.vuckoapp.userservice.services;
 
 import com.vuckoapp.userservice.dto.*;
+import com.vuckoapp.userservice.exceptions.UserNotFoundException;
 import com.vuckoapp.userservice.model.GamerStats;
 import com.vuckoapp.userservice.model.Role;
 import com.vuckoapp.userservice.model.User;
@@ -12,6 +13,8 @@ import com.vuckoapp.userservice.services.mapper.CreateUserRequestMapper;
 import com.vuckoapp.userservice.services.mapper.UserMapper;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,10 +35,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public List<UserDto> all() {
-        return repo.findAll().stream()
-                .map(userMapper::toDto)
-                .toList();
+    public Page<UserDto> all(String username, Pageable pageable) {
+
+        Page<User> page;
+
+        if (username != null && !username.isBlank()) {
+            page = repo.findByUsernameContainingIgnoreCase(username, pageable);
+        } else {
+            page = repo.findAll(pageable);
+        }
+
+        return page.map(userMapper::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -61,8 +71,14 @@ public class UserService {
 
         if (dto.dateOfBirth() != null)
             user.setDateOfBirth(dto.dateOfBirth());
+        repo.save(user);
 
-        return userMapper.toDto(repo.save(user));
+        GamerStats statsDto = null;
+        if(user.getRole().equals(Role.GAMER)){
+            statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);
+        }
+        return userMapper.toDto(user,statsDto);
+
     }
     @Transactional
     public UserDto changePassword(String name, ChangePasswordRequest req) {
@@ -81,7 +97,7 @@ public class UserService {
     @Transactional
     public UserDto getByUsername(String username) {
         User user = repo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException());
         GamerStats statsDto = null;
         if(user.getRole().equals(Role.GAMER)){
             statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);

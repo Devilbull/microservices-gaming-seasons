@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +26,11 @@ public class AdminController {
 
 
     @GetMapping("/users")
-    public List<UserDto> allUsers() {
-        return userService.all();
+    public Page<UserDto> allUsers(
+            @RequestParam(required = false) String username,
+            @PageableDefault(size = 10, sort = "username") Pageable pageable
+    ) {
+        return userService.all(username, pageable);
     }
 
     @PutMapping("/users/{id}/block")
