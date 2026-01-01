@@ -97,7 +97,7 @@ public class UserService {
     @Transactional
     public UserDto getByUsername(String username) {
         User user = repo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
         GamerStats statsDto = null;
         if(user.getRole().equals(Role.GAMER)){
             statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);
@@ -107,7 +107,10 @@ public class UserService {
 
     public void blockUser(UUID id) {
         User user = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
+        if(user.getRole() == Role.ADMIN){
+            throw new RuntimeException("Cannot block admin user");
+        }
         user.setStatus(UserStatus.BLOCKED);
         repo.save(user);
 
@@ -115,7 +118,7 @@ public class UserService {
 
     public void unblockUser(UUID id) {
         User user = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         user.setStatus(UserStatus.ACTIVE);
         repo.save(user);
     }
@@ -123,7 +126,7 @@ public class UserService {
     @Transactional
     public UserDto getById(UUID id) {
         User user = repo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
         GamerStats statsDto = null;
         if(user.getRole().equals(Role.GAMER)){
             statsDto = gamerStatsRepository.findById(user.getId()).orElse(null);
