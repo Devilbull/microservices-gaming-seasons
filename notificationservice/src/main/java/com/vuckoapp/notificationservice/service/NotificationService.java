@@ -21,18 +21,18 @@ public class NotificationService {
 
     public void sendNotification(NotificationRequest request) {
 
-        // 1️⃣ Na osnovu type + payload formiraj subject + body
+        // Get data
         String subject = resolveSubject(request.getType());
         String body = resolveBody(request.getType(), request.getPayload());
 
-        // 2️⃣ Pošalji mail
+        // Send email
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(request.getToEmail());
         mail.setSubject(subject);
         mail.setText(body);
         mailSender.send(mail);
 
-        // 3️⃣ Sačuvaj u bazi
+        // Save in db
         NotificationLog log = new NotificationLog();
         log.setEmail(request.getToEmail());
         log.setSubject(subject);
@@ -50,7 +50,7 @@ public class NotificationService {
             case SESSION_INVITATION -> "Session Invitation";
             case SESSION_JOINED -> "Session Joined";
             case SESSION_CANCELLATION -> "Session Canceled";
-
+            case RANK_CHANGED -> "Organizer Title Updated";
             default -> "System Notification";
         };
     }
@@ -135,6 +135,21 @@ public class NotificationService {
                    Regards,
                    Team
                    """.formatted(username, sessionName, inviteLink);
+            }
+            case RANK_CHANGED -> {
+                String username = (String) payload.get("username");
+                String newTitle = (String) payload.get("newTitle");
+
+                yield """
+                   Hello %s,
+                   
+                   Congratulations! Your organizer title has been updated to: %s.
+                
+                   Keep up the great work!
+                
+                   Regards,
+                   Team
+                   """.formatted(username, newTitle);
             }
             default -> "New notification.";
         };

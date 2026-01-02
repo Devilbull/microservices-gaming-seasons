@@ -4,6 +4,7 @@ public enum NotificationType {
     // user
     ACTIVATION_EMAIL,
     PASSWORD_RESET,
+    RANK_CHANGED,
     // game
     SESSION_INVITATION,
     SESSION_JOINED,

@@ -2,6 +2,7 @@ package com.vuckoapp.userservice.controllers;
 
 
 import com.vuckoapp.userservice.dto.JwtUserPrincipal;
+import com.vuckoapp.userservice.dto.SessionAttendanceDto;
 import com.vuckoapp.userservice.dto.UserDto;
 import com.vuckoapp.userservice.services.GameServiceRequestsService;
 import com.vuckoapp.userservice.services.UserService;
@@ -34,4 +35,11 @@ public class GameserviceRequestsController {
 
         return userService.getById(userId);
     }
+    @PostMapping("/update-attendance")
+    public ResponseEntity<?> updateAttendance(@RequestBody SessionAttendanceDto sessionAttendanceDto){
+
+         return gameServiceRequestsService.updateAttendance(sessionAttendanceDto);
+    }
+
+
 }

@@ -27,9 +27,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         String token = service.register(request);
 
-        // TODO: Pošalji email korisniku sa linkom za aktivaciju:
-        // http://localhost:8080/auth/activate?token=<token>
-        // ili ako imaš frontend, http://myfrontend.com/activate?token=<token>
+
 
         return ResponseEntity.ok(Map.of("message", "Registered successfully"));
     }

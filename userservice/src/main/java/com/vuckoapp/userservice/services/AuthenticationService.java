@@ -4,11 +4,7 @@ import com.vuckoapp.userservice.dto.LoginRequest;
 import com.vuckoapp.userservice.dto.NotificationRequest;
 import com.vuckoapp.userservice.dto.RegisterRequest;
 import com.vuckoapp.userservice.dto.ResetPasswordRequest;
-import com.vuckoapp.userservice.exceptions.InvalidCredentialsException;
-import com.vuckoapp.userservice.exceptions.UserAlreadyExistsException;
-import com.vuckoapp.userservice.exceptions.UserBlockedException;
-import com.vuckoapp.userservice.exceptions.UserNotActivatedException;
-import com.vuckoapp.userservice.exceptions.TokenIsInvalid;
+import com.vuckoapp.userservice.exceptions.*;
 import com.vuckoapp.userservice.messager.NotificationProducer;
 import com.vuckoapp.userservice.model.*;
 import com.vuckoapp.userservice.repository.ActivationTokenRepository;
@@ -21,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.ExemptionMechanismException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -43,24 +40,24 @@ public class AuthenticationService {
         }
 
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new UserAlreadyExistsException();
+            throw new EmailAlreadyExistsException();
         }
 
-        // 1. Kreiraj user i save
+        // Create user
         User user = requestMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setStatus(UserStatus.INITIALIZED);
-        userRepository.save(user);  // user.getId() sada ima UUID
+        userRepository.save(user);
 
-        // 2. Kreiraj token
+        // Create activation token
         String token = UUID.randomUUID().toString();
         ActivationToken activationToken = new ActivationToken();
-        activationToken.setUser(user);   // MapsId uzima userId iz user.getId()
+        activationToken.setUser(user);
         activationToken.setToken(token);
 
         tokenRepository.save(activationToken);
 
-        // 3. Pošalji u RabbitMQ
+        // Mail
         notificationProducer.sendActivationEmail(user.getEmail(),user.getUsername(), token);
 
         return token;
