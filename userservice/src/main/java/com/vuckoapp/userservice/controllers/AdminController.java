@@ -24,7 +24,6 @@ public class AdminController {
     private final UserService userService;
 
 
-
     @GetMapping("/users")
     public Page<UserDto> allUsers(
             @RequestParam(required = false) String username,
@@ -42,12 +41,6 @@ public class AdminController {
     public void unblockUser(@PathVariable UUID id) {
         userService.unblockUser(id);
     }
-    // No need, there is a global handler for 404
-//    @RequestMapping(value = "/**")
-//    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
-//    public void handleUnknownAdminRoutes() {
-//        // Prazno, samo vraća 404
-//        throw new NotFoundException();
-//    }
-}
 
+
+}

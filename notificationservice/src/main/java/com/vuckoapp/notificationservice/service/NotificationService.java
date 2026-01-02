@@ -155,8 +155,6 @@ public class NotificationService {
         };
     }
 
-
-    @SuppressWarnings("unchecked")
     public void sendEmailsForSessionCancellation(NotificationRequest request) {
 
         Object emailsObj = request.getPayload().get("emails");
