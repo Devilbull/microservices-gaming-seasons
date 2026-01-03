@@ -51,6 +51,8 @@ public class NotificationService {
             case SESSION_JOINED -> "Session Joined";
             case SESSION_CANCELLATION -> "Session Canceled";
             case RANK_CHANGED -> "Organizer Title Updated";
+            case SESSION_CREATION_REJECTED -> "Session Creation Rejected";
+            case SESSION_REMINDER_60_MIN -> "Session Reminder: Starting in 60 Minutes";
             default -> "System Notification";
         };
     }
@@ -150,6 +152,35 @@ public class NotificationService {
                    Regards,
                    Team
                    """.formatted(username, newTitle);
+            }
+            case SESSION_CREATION_REJECTED -> {
+                String username = (String) payload.get("username");
+
+                yield """
+                   Hello %s,
+                   
+                   We regret to inform you that your session creation request  has been rejected.
+                
+                   You attendance is less then 90 PERCENT.
+                
+                   Regards,
+                   Team
+                   """.formatted(username);
+            }
+            case SESSION_REMINDER_60_MIN -> {
+                String username = (String) payload.get("username");
+                String sessionName = (String) payload.get("sessionName");
+                String sessionTime = (String) payload.get("sessionTime");
+                yield """
+                   Hello %s,
+                   
+                   This is a reminder that your gaming session "%s" is starting in 60 minutes at %s.
+                
+                   Get ready to join the fun!
+                
+                   Regards,
+                   Team
+                   """.formatted(username, sessionName, sessionTime);
             }
             default -> "New notification.";
         };

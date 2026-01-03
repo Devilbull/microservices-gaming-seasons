@@ -19,7 +19,7 @@ public class NotificationProducer {
     public void sendMailThatInformsUserHasLowerAttendance(String email, String username) {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail(email)
-                .type(GamingNotificationType.SESSION_REJECTED_ATTENDANCE)
+                .type(GamingNotificationType.SESSION_CREATION_REJECTED)
                 .sourceService("USER_SERVICE")
                 .payload(Map.of(
                         "username", username,

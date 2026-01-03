@@ -32,6 +32,6 @@ Start-Sleep -Seconds 5
 #  "-NoExit", `
 #  "-Command cd frontend; npm run dev" `
 #  -WindowStyle Normal
-
-cd frontend
- npm run dev
+#
+#cd frontend
+# npm run dev
