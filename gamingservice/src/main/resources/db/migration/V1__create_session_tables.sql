@@ -8,5 +8,6 @@ CREATE TABLE sessions (
                           session_type VARCHAR(20) NOT NULL,
                           start_of_session TIMESTAMP NOT NULL,
                           description VARCHAR(300) NOT NULL,
-                          session_status VARCHAR(20) NOT NULL
-);
+                          session_status VARCHAR(20) NOT NULL,
+                        reminder_60_sent BOOLEAN NOT NULL DEFAULT FALSE
+)

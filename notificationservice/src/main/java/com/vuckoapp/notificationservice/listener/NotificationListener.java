@@ -16,8 +16,8 @@ public class NotificationListener {
 
     @RabbitListener(queues = RabbitConfig.QUEUE)
     public void receive(NotificationRequest request) {
-        if(request.getType() == NotificationType.SESSION_CANCELLATION){
-            notificationService.sendEmailsForSessionCancellation(request);
+        if(request.getType() == NotificationType.SESSION_CANCELLATION || request.getType() == NotificationType.SESSION_REMINDER_60_MIN){
+            notificationService.sendMultipleNotifications(request);
         }else{
             notificationService.sendNotification(request);
         }

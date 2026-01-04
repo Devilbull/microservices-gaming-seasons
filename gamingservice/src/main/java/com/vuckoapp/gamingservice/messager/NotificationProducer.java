@@ -2,12 +2,14 @@ package com.vuckoapp.gamingservice.messager;
 
 import com.vuckoapp.gamingservice.config.RabbitProducerConfig;
 import com.vuckoapp.gamingservice.dto.NotificationRequest;
+import com.vuckoapp.gamingservice.model.Session;
 import com.vuckoapp.gamingservice.types.GamingNotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,7 +22,7 @@ public class NotificationProducer {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail(email)
                 .type(GamingNotificationType.SESSION_CREATION_REJECTED)
-                .sourceService("USER_SERVICE")
+                .sourceService("GAMING_SERVICE")
                 .payload(Map.of(
                         "username", username,
                         "email", email
@@ -38,7 +40,7 @@ public class NotificationProducer {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail(email)
                 .type(GamingNotificationType.SESSION_JOINED)
-                .sourceService("USER_SERVICE")
+                .sourceService("GAMING_SERVICE")
                 .payload(Map.of(
                         "username", username,
                         "email", email,
@@ -57,7 +59,7 @@ public class NotificationProducer {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail("no email for this type of notification")
                 .type(GamingNotificationType.SESSION_CANCELLATION)
-                .sourceService("USER_SERVICE")
+                .sourceService("GAMING_SERVICE")
                 .payload(Map.of(
                         "emails", emails,
                         "sessionName", sessionName
@@ -90,5 +92,25 @@ public class NotificationProducer {
                 request
         );
     }
+
+
+    public void sendMailToNotifyUsersThatSessionIsin60Mins(List<String> emails, String sessionName) {
+        NotificationRequest request = NotificationRequest.builder()
+                .toEmail("no email for this type of notification")
+                .type(GamingNotificationType.SESSION_REMINDER_60_MIN)
+                .sourceService("GAMING_SERVICE")
+                .payload(Map.of(
+                        "emails", emails,
+                        "sessionName", sessionName
+                ))
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                RabbitProducerConfig.EXCHANGE,
+                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                request
+        );
+    }
+
 
 }

@@ -24,4 +24,8 @@ public interface   GameRepository extends JpaRepository<Game, UUID> {
 
     @Transactional
     void deleteByGameName(String gameName);
+
+    Page<Game> findByGameTypeContainingIgnoreCase(String gameType, Pageable pageable);
+
+    Page<Game> findByGameTypeIgnoreCaseAndGameNameContainingIgnoreCase(String gameType, String gameName, Pageable pageable);
 }

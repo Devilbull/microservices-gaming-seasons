@@ -30,11 +30,11 @@ public class GameService {
 
         if (gameType != null && gameName != null) {
             page = gameRepository
-                    .findByGameTypeAndGameNameContainingIgnoreCase(
+                    .findByGameTypeIgnoreCaseAndGameNameContainingIgnoreCase(
                             gameType, gameName, pageable);
         } else if (gameType != null) {
             page = gameRepository
-                    .findByGameType(gameType, pageable);
+                    .findByGameTypeContainingIgnoreCase(gameType, pageable);
         } else if (gameName != null) {
             page = gameRepository
                     .findByGameNameContainingIgnoreCase(gameName, pageable);

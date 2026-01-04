@@ -48,7 +48,8 @@ public class Session {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
     private java.util.List<Participation> participants = new java.util.ArrayList<>();
-
+    @Column(nullable = false)
+    private boolean reminder60Sent = false;
     @PrePersist
     public void prePersist() {
         if (this.id == null) {
