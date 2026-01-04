@@ -186,7 +186,7 @@ public class NotificationService {
         };
     }
 
-    public void sendEmailsForSessionCancellation(NotificationRequest request) {
+    public void sendMultipleNotifications(NotificationRequest request) {
 
         Object emailsObj = request.getPayload().get("emails");
         if (emailsObj == null) {
@@ -195,10 +195,12 @@ public class NotificationService {
 
         var emails = (java.util.List<String>) emailsObj;
 
+        NotificationType type = request.getType();
+
         for (String email : emails) {
             NotificationRequest singleRequest = NotificationRequest.builder()
                     .toEmail(email)
-                    .type(NotificationType.SESSION_CANCELLATION)
+                    .type(type)
                     .sourceService(request.getSourceService())
                     .payload(request.getPayload())
                     .build();
