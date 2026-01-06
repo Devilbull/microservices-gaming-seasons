@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication
 //@CrossOrigin
-@EnableFeignClients
+//@EnableFeignClients
 public class UserServiceApplication {
 
 	public static void main(String[] args) {
