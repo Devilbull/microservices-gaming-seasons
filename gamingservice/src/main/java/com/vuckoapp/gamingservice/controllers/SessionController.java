@@ -38,7 +38,9 @@ public class SessionController {
     public ResponseEntity<?> cancelSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
         return seasonService.cancelSession(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username(), principal.role());
     }
-
+//     without parameter isJoined   -----------all sesions
+//      isJoined = true	 --------   just my sessions
+//            isJoined = false	----   sessions where i am not joined
     @GetMapping("/all")
     public Page<SessionDto> getAllSessions(
             SessionSearchDto searchRequest,
@@ -64,7 +66,7 @@ public class SessionController {
             @RequestParam String token) {
         return seasonService.acceptInvite(token);
     }
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/lock-session")
     public ResponseEntity<?> lockSession(
             @RequestBody SessionLockDto sessionLockDto,
