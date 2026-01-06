@@ -36,7 +36,8 @@ public class SessionReminderScheduler {
             if (!emails.isEmpty()) {
                 notificationProducer.sendMailToNotifyUsersThatSessionIsin60Mins(
                         emails,
-                        session.getSessionName()
+                        session.getSessionName(),
+                        session.getStartOfSession()
                 );
             }
             session.setReminder60Sent(true);

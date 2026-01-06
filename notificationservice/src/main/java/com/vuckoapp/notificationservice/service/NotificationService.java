@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -168,11 +169,10 @@ public class NotificationService {
                    """.formatted(username);
             }
             case SESSION_REMINDER_60_MIN -> {
-                String username = (String) payload.get("username");
                 String sessionName = (String) payload.get("sessionName");
                 String sessionTime = (String) payload.get("sessionTime");
                 yield """
-                   Hello %s,
+                   Hello ,
                    
                    This is a reminder that your gaming session "%s" is starting in 60 minutes at %s.
                 
@@ -180,7 +180,7 @@ public class NotificationService {
                 
                    Regards,
                    Team
-                   """.formatted(username, sessionName, sessionTime);
+                   """.formatted( sessionName, sessionTime);
             }
             default -> "New notification.";
         };
@@ -193,7 +193,7 @@ public class NotificationService {
             throw new IllegalArgumentException("Emails list is missing in payload");
         }
 
-        var emails = (java.util.List<String>) emailsObj;
+        List<String> emails = (List<String>) emailsObj;
 
         NotificationType type = request.getType();
 

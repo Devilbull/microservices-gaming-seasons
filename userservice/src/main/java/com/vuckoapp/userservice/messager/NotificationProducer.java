@@ -29,7 +29,7 @@ public class NotificationProducer {
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                RabbitProducerConfig.ROUTING_KEY,
                 request
         );
     }

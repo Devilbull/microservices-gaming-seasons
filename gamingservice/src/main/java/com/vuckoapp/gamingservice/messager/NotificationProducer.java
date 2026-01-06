@@ -2,12 +2,12 @@ package com.vuckoapp.gamingservice.messager;
 
 import com.vuckoapp.gamingservice.config.RabbitProducerConfig;
 import com.vuckoapp.gamingservice.dto.NotificationRequest;
-import com.vuckoapp.gamingservice.model.Session;
 import com.vuckoapp.gamingservice.types.GamingNotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class NotificationProducer {
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                RabbitProducerConfig.ROUTING_KEY,
                 request
         );
     }
@@ -50,7 +50,7 @@ public class NotificationProducer {
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                RabbitProducerConfig.ROUTING_KEY,
                 request
         );
     }
@@ -68,7 +68,7 @@ public class NotificationProducer {
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                RabbitProducerConfig.ROUTING_KEY,
                 request
         );
     }
@@ -94,20 +94,21 @@ public class NotificationProducer {
     }
 
 
-    public void sendMailToNotifyUsersThatSessionIsin60Mins(List<String> emails, String sessionName) {
+    public void sendMailToNotifyUsersThatSessionIsin60Mins(List<String> emails, String sessionName, LocalDateTime startOfSession) {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail("no email for this type of notification")
                 .type(GamingNotificationType.SESSION_REMINDER_60_MIN)
                 .sourceService("GAMING_SERVICE")
                 .payload(Map.of(
                         "emails", emails,
-                        "sessionName", sessionName
+                        "sessionName", sessionName,
+                        "sessionTime", startOfSession.toString()
                 ))
                 .build();
 
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE,
-                RabbitProducerConfig.ROUTING_KEY, // ← novi routing key: "notification.send"
+                RabbitProducerConfig.ROUTING_KEY,
                 request
         );
     }
