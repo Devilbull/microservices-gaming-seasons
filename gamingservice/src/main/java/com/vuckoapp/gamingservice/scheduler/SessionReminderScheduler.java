@@ -20,7 +20,7 @@ public class SessionReminderScheduler {
     private final NotificationProducer notificationProducer;
 
     @Transactional
-    @Scheduled(fixedRate = 60_000)
+    @Scheduled(fixedRate = 60_000) // every minute
      public void sendSessionReminders() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime from = now.plusMinutes(59);

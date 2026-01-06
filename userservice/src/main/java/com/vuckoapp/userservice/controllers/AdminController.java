@@ -24,13 +24,7 @@ public class AdminController {
     private final UserService userService;
 
 
-    @GetMapping("/users")
-    public Page<UserDto> allUsers(
-            @RequestParam(required = false) String username,
-            @PageableDefault(size = 10, sort = "username") Pageable pageable
-    ) {
-        return userService.all(username, pageable);
-    }
+
 
     @PutMapping("/users/{id}/block")
     public void blockUser(@PathVariable UUID id) {

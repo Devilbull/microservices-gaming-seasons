@@ -8,6 +8,9 @@ import com.vuckoapp.userservice.services.UserService; // servis koji pozivaš
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;                // Lombok anotacija
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication; // za pristup ulogovanom korisniku
@@ -75,5 +78,13 @@ public class UserController {
             return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
+
+    @GetMapping
+    public Page<UserDto> allUsers(
+            @RequestParam(required = false) String username,
+            @PageableDefault(size = 10, sort = "username") Pageable pageable
+    ) {
+        return userService.all(username, pageable);
+    }
 }
 
