@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -79,7 +80,20 @@ public class SessionController {
 
 
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my")
+    public Page<SessionDto> getMySessions(
+            @RequestParam(required = false) UUID excludedUserId,
+            Pageable pageable,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ) {
 
+        UUID userId = UUID.fromString(principal.id());
+        if(excludedUserId == null){
+            return seasonService.getSessionsCreatedByUser(userId, pageable);
+        }
+        return seasonService.getSessionsCreatedByUserExcluding(userId, excludedUserId, pageable);
+    }
 
 
 

@@ -12,6 +12,7 @@ import com.vuckoapp.gamingservice.utils.ResponseBuilder;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -361,11 +362,34 @@ public class SessionService {
     }
 
 
+    public Page<SessionDto> getSessionsCreatedByUser(UUID creatorId, Pageable pageable) {
+        return sessionRepository
+                .findAllByCreatorIdAndSessionStatus(
+                        creatorId,
+                        SessionStatus.SCHEDULED,
+                        pageable
+                )
+                .map(sessionMapper::toDto);
+    }
 
 
+    public Page<SessionDto> getSessionsCreatedByUserExcluding(UUID creatorId, UUID excludedUserId, Pageable pageable) {
+        Page<Session> sessionsPage = sessionRepository.findAllByCreatorIdAndSessionStatus(
+                creatorId,
+                SessionStatus.SCHEDULED,
+                pageable
+        );
 
+        // filtriraj sesije gde excludedUserId već nije participant
+        List<Session> filtered = sessionsPage.stream()
+                .filter(s -> excludedUserId == null ||
+                        !participationRepository.existsByUserIdAndSessionId(excludedUserId, s.getId()))
+                .toList();
 
+        List<SessionDto> dtos = filtered.stream()
+                .map(sessionMapper::toDto)
+                .toList();
 
-
-
+        return new PageImpl<>(dtos, pageable, filtered.size());
+    }
 }
