@@ -97,6 +97,7 @@ public class SessionService {
 
                     return new SessionDto(
                             dto.sessionId(),
+                            dto.creatorId(),
                             dto.sessionName(),
                             dto.gameName(),
                             dto.description(),
@@ -104,7 +105,8 @@ public class SessionService {
                             dto.maxPlayers(),
                             dto.currentPlayers(),
                             dto.startTime(),
-                            joined
+                            joined,
+                            dto.sessionStatus()
                     );
                 });
     }
@@ -364,32 +366,37 @@ public class SessionService {
 
     public Page<SessionDto> getSessionsCreatedByUser(UUID creatorId, Pageable pageable) {
         return sessionRepository
-                .findAllByCreatorIdAndSessionStatus(
+                .findAllByCreatorId(
                         creatorId,
-                        SessionStatus.SCHEDULED,
                         pageable
                 )
                 .map(sessionMapper::toDto);
     }
 
 
+//    public Page<SessionDto> getSessionsCreatedByUserExcluding(UUID creatorId, UUID excludedUserId, Pageable pageable) {
+//        Page<Session> sessionsPage = sessionRepository.findAllByCreatorIdAndSessionStatus(
+//                creatorId,
+//                SessionStatus.SCHEDULED,
+//                pageable
+//        );
+//
+//        List<Session> filtered = sessionsPage.stream()
+//                .filter(s -> excludedUserId == null ||
+//                        !participationRepository.existsByUserIdAndSessionId(excludedUserId, s.getId()))
+//                .toList();
+//
+//        List<SessionDto> dtos = filtered.stream()
+//                .map(sessionMapper::toDto)
+//                .toList();
+//
+//        return new PageImpl<>(dtos, pageable, filtered.size());
+//    }
+
     public Page<SessionDto> getSessionsCreatedByUserExcluding(UUID creatorId, UUID excludedUserId, Pageable pageable) {
-        Page<Session> sessionsPage = sessionRepository.findAllByCreatorIdAndSessionStatus(
-                creatorId,
-                SessionStatus.SCHEDULED,
-                pageable
+        Page<Session> page = sessionRepository.findAllByCreatorIdExcludingUser(
+                creatorId,  excludedUserId, pageable
         );
-
-        // filtriraj sesije gde excludedUserId već nije participant
-        List<Session> filtered = sessionsPage.stream()
-                .filter(s -> excludedUserId == null ||
-                        !participationRepository.existsByUserIdAndSessionId(excludedUserId, s.getId()))
-                .toList();
-
-        List<SessionDto> dtos = filtered.stream()
-                .map(sessionMapper::toDto)
-                .toList();
-
-        return new PageImpl<>(dtos, pageable, filtered.size());
+        return page.map(sessionMapper::toDto);
     }
 }

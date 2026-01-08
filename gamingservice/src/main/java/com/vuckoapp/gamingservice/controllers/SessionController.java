@@ -23,7 +23,8 @@ public class SessionController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create-session")
-    public ResponseEntity<?> createSession(@Valid @RequestBody CreateSessionRequest request,@AuthenticationPrincipal JwtUserPrincipal principal) {
+    public ResponseEntity<?> createSession(
+            @Valid @RequestBody CreateSessionRequest request,@AuthenticationPrincipal JwtUserPrincipal principal) {
         return seasonService.createSessionIfUserPermitted(request, principal.email(),principal.username());
     }
 

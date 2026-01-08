@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -29,9 +30,24 @@ public interface  SessionRepository extends JpaRepository<Session, UUID>, JpaSpe
             LocalDateTime to
     );
 
-    Page<Session> findAllByCreatorIdAndSessionStatus(
+    Page<Session> findAllByCreatorId(
             UUID creatorId,
-            SessionStatus status,
             Pageable pageable
     );
+
+
+    @Query("""
+    SELECT s FROM Session s
+    WHERE s.creatorId = :creatorId
+      AND (:excludedUserId IS NULL OR NOT EXISTS (
+          SELECT 1 FROM Participation p
+          WHERE p.sessionId = s.id AND p.userId = :excludedUserId
+      ))
+""")
+    Page<Session> findAllByCreatorIdExcludingUser(
+            @Param("creatorId") UUID creatorId,
+            @Param("excludedUserId") UUID excludedUserId,
+            Pageable pageable
+    );
+
 }
