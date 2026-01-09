@@ -4,6 +4,7 @@ import com.vuckoapp.gamingservice.model.SessionType;
 
 public record SessionSearchDto(
         String gameName,
+        String sessionName,
         SessionType sessionType,
         Integer maxNumPlayers,
         String keywords,

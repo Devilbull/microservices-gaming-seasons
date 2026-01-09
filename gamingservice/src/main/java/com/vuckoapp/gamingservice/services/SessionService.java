@@ -44,11 +44,20 @@ public class SessionService {
         Specification<Session> spec = Specification.where(null);
 
 
-        if (req.gameName() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("gameName"), req.gameName()));
-        }
+        if (req.gameName() != null && !req.gameName().isBlank()) {
+            String pattern = "%" + req.gameName().toLowerCase() + "%";
 
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("gameName")), pattern)
+            );
+        }
+        if (req.sessionName() != null && !req.sessionName().isBlank()) {
+            String pattern = "%" + req.sessionName().toLowerCase() + "%";
+
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("sessionName")), pattern)
+            );
+        }
 
         if (req.sessionType() != null) {
             spec = spec.and((root, query, cb) ->
