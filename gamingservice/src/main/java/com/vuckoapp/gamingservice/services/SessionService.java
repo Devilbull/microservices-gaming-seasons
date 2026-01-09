@@ -208,7 +208,7 @@ public class SessionService {
 
         participationRepository.save(participant);
         ///  To do sendMail
-        notificationProducer.sendMailIfUserHasJoinedSession(email,username,session.getSessionName());
+        notificationProducer.sendMailIfUserHasJoinedSession(email,username,session.getSessionName(),session.getGameName());
         return ResponseBuilder.build(HttpStatus.OK, "User joined session successfully");
 
     }

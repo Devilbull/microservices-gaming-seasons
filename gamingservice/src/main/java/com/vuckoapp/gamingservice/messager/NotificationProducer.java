@@ -36,7 +36,7 @@ public class NotificationProducer {
         );
     }
 
-    public void sendMailIfUserHasJoinedSession(String email, String username, String sessionName)  {
+    public void sendMailIfUserHasJoinedSession(String email, String username, String sessionName, String gameName)  {
         NotificationRequest request = NotificationRequest.builder()
                 .toEmail(email)
                 .type(GamingNotificationType.SESSION_JOINED)
@@ -44,7 +44,8 @@ public class NotificationProducer {
                 .payload(Map.of(
                         "username", username,
                         "email", email,
-                        "sessionName", sessionName
+                        "sessionName", sessionName,
+                            "gameName", gameName
                 ))
                 .build();
 
