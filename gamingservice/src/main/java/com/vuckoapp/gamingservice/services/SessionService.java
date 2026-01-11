@@ -12,13 +12,10 @@ import com.vuckoapp.gamingservice.utils.ResponseBuilder;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +37,8 @@ public class SessionService {
     private final SessionMapper sessionMapper;
     private final SessionInviteRepository sessionInviteRepository;
 
-    public Page<SessionDto> getAllSessions(SessionSearchDto req, Pageable pageable, UUID currentUserId) {
+    public Page<SessionDto> getAllSessions(
+            SessionSearchDto req, Pageable pageable, UUID currentUserId) {
         Specification<Session> spec = Specification.where(null);
 
 
@@ -107,6 +105,7 @@ public class SessionService {
                     return new SessionDto(
                             dto.sessionId(),
                             dto.creatorId(),
+                            dto.ownerUsername(),
                             dto.sessionName(),
                             dto.gameName(),
                             dto.description(),
@@ -152,6 +151,7 @@ public class SessionService {
         // Build session
         Session session = Session.builder()
                 .creatorId(user.id())
+                .ownerUsername(username)
                 .sessionName(request.sessionName())
                 .gameName(request.gameName())
                 .maxPlayers(request.maxPlayers())

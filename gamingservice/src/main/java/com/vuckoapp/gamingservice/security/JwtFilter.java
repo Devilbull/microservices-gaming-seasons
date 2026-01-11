@@ -33,6 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return null;
     }
 
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -56,7 +57,8 @@ public class JwtFilter extends OncePerRequestFilter {
                             jwtUserPrincipal,
                             null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                    );            auth.setDetails(email);
+                    );
+            auth.setDetails(email);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 

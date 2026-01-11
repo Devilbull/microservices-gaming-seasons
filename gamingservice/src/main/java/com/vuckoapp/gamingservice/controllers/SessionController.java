@@ -37,7 +37,8 @@ public class SessionController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{sessionId}/cancel")
-    public ResponseEntity<?> cancelSession(@PathVariable UUID sessionId,@AuthenticationPrincipal JwtUserPrincipal principal) {
+    public ResponseEntity<?> cancelSession(@PathVariable UUID sessionId,
+                                           @AuthenticationPrincipal JwtUserPrincipal principal) {
         return seasonService.cancelSession(sessionId,UUID.fromString(principal.id()), principal.email(),principal.username(), principal.role());
     }
 //     without parameter isJoined   -----------all sesions

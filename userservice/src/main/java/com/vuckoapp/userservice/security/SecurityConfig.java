@@ -38,7 +38,6 @@ public class SecurityConfig {
                         .requestMatchers("/gameservice/**").authenticated()
                         .anyRequest().permitAll()
                 )
-
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
                             res.setStatus(401);

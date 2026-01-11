@@ -40,7 +40,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req,
                                    HttpServletResponse response) {
-
+        System.out.println("Login attempt for user: " + req.username());
         String token = service.login(req);
 
         Cookie cookie = new Cookie("jwt", token);
