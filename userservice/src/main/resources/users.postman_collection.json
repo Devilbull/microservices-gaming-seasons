@@ -108,7 +108,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtaXNhIiwidXNlcklkIjoiNDhlY2VhMGEtOTgyOC00MTQzLTkwMWYtNTgyMDZlMjBlODFmIiwicm9sZSI6IkdBTUVSIiwiaWF0IjoxNzY1MTIwNjA0LCJleHAiOjE3NjUyMDcwMDR9.-mdxBJosW95qWVetY5Xc-wubyakD243iWjifBEzKQzk",
+								"value": "Bearer {{ACCESS_TOKEN}}",
 								"type": "text",
 								"disabled": true
 							}
